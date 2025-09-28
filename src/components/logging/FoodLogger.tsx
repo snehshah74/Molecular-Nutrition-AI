@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import type { FoodLogFormData, Meal } from '@/types'
 import { NutritionAPI } from '@/services/api'
+import { NutrientCalculations } from '@/services/calculations'
 import { formatTime } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { useToast } from '@/contexts/ToastContext'
@@ -74,16 +75,18 @@ export function FoodLogger({ onMealAdded, meals, onMealUpdate, onMealDelete }: F
       const foodItems = await NutritionAPI.parseFoodDescription(data.description)
       console.log('Parsed food items:', foodItems)
       
+      // Calculate total nutrients for this meal
+      const mealTotalNutrients = NutrientCalculations.calculateDailyTotals([{
+        foodItems
+      }])
+
       const meal: Meal = {
         id: Math.random().toString(36).substr(2, 9),
         name: `${data.mealType.charAt(0).toUpperCase() + data.mealType.slice(1)}`,
         description: data.description,
         foodItems,
         timestamp: data.timestamp,
-        totalNutrients: {
-          macronutrients: [],
-          micronutrients: []
-        }
+        totalNutrients: mealTotalNutrients
       }
 
       console.log('Created meal:', meal)
@@ -234,22 +237,6 @@ export function FoodLogger({ onMealAdded, meals, onMealUpdate, onMealDelete }: F
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   Be specific with quantities and measurements for better accuracy
                 </p>
-                <div className="mt-2 flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setValue('description', '1 apple, 1 banana')}
-                    className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded hover:bg-gray-200 dark:hover:bg-gray-600"
-                  >
-                    Test: Apple + Banana
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setValue('description', '1 cup rice, 100g chicken')}
-                    className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded hover:bg-gray-200 dark:hover:bg-gray-600"
-                  >
-                    Test: Rice + Chicken
-                  </button>
-                </div>
               </div>
 
               {/* Timestamp */}

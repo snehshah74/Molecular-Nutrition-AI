@@ -8,22 +8,40 @@ import type {
 import { NutritionKnowledgeBase } from './nutritionKnowledge'
 import { AdvancedNutritionKnowledge } from './advancedNutritionKnowledge'
 
-// Simple in-memory cache for API responses (available for future optimization)
-// const apiCache = new Map<string, { data: any; timestamp: number }>()
-// const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+// Enhanced in-memory cache for API responses with performance optimization
+const apiCache = new Map<string, { data: any; timestamp: number }>()
+const CACHE_DURATION = 10 * 60 * 1000 // 10 minutes for better performance
 
-// Cache helper functions (currently unused but available for future optimization)
-// const getCachedData = (key: string) => {
-//   const cached = apiCache.get(key)
-//   if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-//     return cached.data
-//   }
-//   return null
-// }
+// Cache helper functions for optimized performance
+const getCachedData = (key: string) => {
+  const cached = apiCache.get(key)
+  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+    console.log('Cache hit for:', key)
+    return cached.data
+  }
+  return null
+}
 
-// const setCachedData = (key: string, data: any) => {
-//   apiCache.set(key, { data, timestamp: Date.now() })
-// }
+const setCachedData = (key: string, data: any) => {
+  apiCache.set(key, { data, timestamp: Date.now() })
+  console.log('Cache set for:', key)
+}
+
+// Performance monitoring
+const performanceMetrics = {
+  totalRequests: 0,
+  cacheHits: 0,
+  averageResponseTime: 0,
+  lastRequestTime: 0
+}
+
+const updatePerformanceMetrics = (responseTime: number, fromCache: boolean = false) => {
+  performanceMetrics.totalRequests++
+  if (fromCache) performanceMetrics.cacheHits++
+  performanceMetrics.lastRequestTime = responseTime
+  performanceMetrics.averageResponseTime = 
+    (performanceMetrics.averageResponseTime * (performanceMetrics.totalRequests - 1) + responseTime) / performanceMetrics.totalRequests
+}
 
 // OpenRouter API configuration
 const openai = new OpenAI({
@@ -187,8 +205,20 @@ const MOCK_NUTRITION_DATA = {
 // Nutrition API service
 export class NutritionAPI {
   static async getNutritionData(foodDescription: string): Promise<any> {
+    const startTime = Date.now()
+    
     try {
       console.log('Fetching nutrition data for:', foodDescription)
+      
+      // Check cache first
+      const cacheKey = `nutrition_${foodDescription.toLowerCase().trim()}`
+      const cachedData = getCachedData(cacheKey)
+      if (cachedData) {
+        const responseTime = Date.now() - startTime
+        updatePerformanceMetrics(responseTime, true)
+        console.log('Returning cached nutrition data')
+        return cachedData
+      }
       
       // Try to find mock data with flexible matching
       const normalizedDescription = foodDescription.toLowerCase().trim()
@@ -221,12 +251,20 @@ export class NutritionAPI {
       // Use mock data if found
       if (mockData) {
         console.log('Using mock data for:', foodDescription)
-        return {
+        const result = {
           food: {
             name: foodDescription,
             nutrients: mockData
           }
         }
+        
+        // Cache the result
+        setCachedData(cacheKey, result)
+        
+        const responseTime = Date.now() - startTime
+        updatePerformanceMetrics(responseTime, false)
+        
+        return result
       }
 
       // Real API call to Edamam (if API keys are available)
@@ -400,6 +438,8 @@ export class AIRecommendationsService {
     dailyIntake: any,
     deficiencies: string[]
   ): Promise<AIRecommendation[]> {
+    const startTime = Date.now()
+    
     try {
       console.log('=== AI SERVICE: Starting recommendation generation ===')
       console.log('API Key available:', !!((import.meta as any).env?.VITE_OPENROUTER_API_KEY))
@@ -407,33 +447,58 @@ export class AIRecommendationsService {
       console.log('Daily intake:', dailyIntake)
       console.log('Deficiencies:', deficiencies)
       
+      // Create cache key based on user profile and deficiencies
+      const cacheKey = `recommendations_${userProfile.id}_${deficiencies.sort().join('_')}_${userProfile.lifestyle}`
+      
+      // Check cache first
+      const cachedData = getCachedData(cacheKey)
+      if (cachedData) {
+        const responseTime = Date.now() - startTime
+        updatePerformanceMetrics(responseTime, true)
+        console.log('Returning cached recommendations')
+        return cachedData
+      }
+      
       const prompt = this.buildRecommendationPrompt(userProfile, dailyIntake, deficiencies)
       console.log('Generated prompt:', prompt.substring(0, 200) + '...')
       
       const response = await openai.chat.completions.create({
-        model: "openai/gpt-4o",
+        model: "openai/gpt-4o-mini", // Faster model for better performance
         messages: [
           {
             role: "system",
-            content: "You are a molecular nutrition AI expert. Provide personalized, science-based nutrition recommendations. Be specific about food suggestions and explain the molecular benefits."
+            content: "You are an advanced molecular nutrition AI with expertise in nutrigenomics, circadian biology, and precision medicine. Provide highly specific, evidence-based nutrition recommendations with molecular explanations. Always respond in valid JSON format."
           },
           {
             role: "user",
             content: prompt
           }
         ],
-        max_tokens: 1000,
-        temperature: 0.7
+        max_tokens: 1500, // Increased for more detailed responses
+        temperature: 0.3, // Lower temperature for more consistent, scientific responses
+        response_format: { type: "json_object" } // Force JSON response format
       })
 
       const content = response.choices[0]?.message?.content || ""
       console.log('AI Response received:', content.substring(0, 200) + '...')
       const recommendations = this.parseRecommendations(content)
       console.log('Parsed recommendations:', recommendations)
+      
+      // Cache the results
+      setCachedData(cacheKey, recommendations)
+      
+      const responseTime = Date.now() - startTime
+      updatePerformanceMetrics(responseTime, false)
+      console.log(`AI request completed in ${responseTime}ms`)
+      
       return recommendations
     } catch (error) {
       console.error('Error generating AI recommendations:', error)
       console.log('Falling back to mock recommendations')
+      
+      const responseTime = Date.now() - startTime
+      updatePerformanceMetrics(responseTime, false)
+      
       return this.getMockRecommendations(deficiencies)
     }
   }
@@ -459,6 +524,11 @@ export class AIRecommendationsService {
       deficiencies
     )
 
+    // Calculate BMI and get BMI-based recommendations
+    const bmi = userProfile.weight / ((userProfile.height / 100) ** 2)
+    const bmiRecommendations = AdvancedNutritionKnowledge.getBMIRecommendations(bmi, userProfile)
+    const calorieNeeds = AdvancedNutritionKnowledge.calculatePersonalizedCalories(userProfile)
+
     return `
 ${advancedPrompt}
 
@@ -466,8 +536,12 @@ ADDITIONAL CONTEXT:
 You are a molecular nutrition AI expert with deep knowledge of biochemistry, nutrient interactions, and personalized nutrition. Use the following comprehensive knowledge base to provide expert recommendations.
 
 USER PROFILE:
+- Name: ${userProfile.name}
 - Age: ${userProfile.age} years old
 - Sex: ${userProfile.sex}
+- Height: ${userProfile.height} cm
+- Weight: ${userProfile.weight} kg
+- BMI: ${(userProfile.weight / ((userProfile.height / 100) ** 2)).toFixed(1)}
 - Lifestyle: ${userProfile.lifestyle}
 - Health Goals: ${userProfile.healthGoals.join(', ')}
 - Medical History: ${userProfile.medicalHistory.join(', ')}
@@ -492,6 +566,14 @@ ${Object.entries(healthGoalRecommendations).map(([category, recs]) =>
 MOLECULAR NUTRITION INSIGHTS:
 ${molecularInsights.slice(0, 5).map(insight => `- ${insight}`).join('\n')}
 
+BMI-BASED RECOMMENDATIONS (BMI: ${bmi.toFixed(1)}):
+${bmiRecommendations.map(rec => `- ${rec}`).join('\n')}
+
+PERSONALIZED CALORIE NEEDS:
+- Maintenance: ${calorieNeeds.maintenance} kcal/day
+- Weight Loss: ${calorieNeeds.deficit} kcal/day (20% deficit)
+- Weight Gain: ${calorieNeeds.surplus} kcal/day (10% surplus)
+
 COMPREHENSIVE NUTRIENT KNOWLEDGE:
 - Protein: Essential for muscle synthesis, enzyme production, hormone regulation. Complete proteins provide all 9 essential amino acids.
 - Iron: Critical for oxygen transport via hemoglobin. Vitamin C increases non-heme iron absorption by 6x.
@@ -503,15 +585,15 @@ COMPREHENSIVE NUTRIENT KNOWLEDGE:
 - Folate: DNA synthesis, cell division, prevents neural tube defects.
 
 INSTRUCTIONS:
-Provide 3-5 highly specific, science-based nutrition recommendations. For each recommendation:
+Provide 3-5 highly specific, science-based nutrition recommendations in JSON format. For each recommendation:
 
 1. TYPE: Choose from food_suggestion, deficiency_alert, optimization_tip, health_insight
 2. PRIORITY: high, medium, or low based on urgency and impact
-3. TITLE: Clear, actionable title
-4. DESCRIPTION: Detailed explanation with molecular benefits and scientific reasoning
-5. REASONING: Specific to user's profile, lifestyle, and health goals
-6. SUGGESTED_FOODS: Specific foods with serving sizes
-7. TARGET_NUTRIENTS: Nutrients being addressed
+3. TITLE: Clear, actionable title (max 60 characters)
+4. DESCRIPTION: Concise explanation with molecular benefits (max 200 characters)
+5. REASONING: Specific to user's profile, lifestyle, and health goals (max 150 characters)
+6. SUGGESTED_FOODS: Array of specific foods with serving sizes (3-5 items)
+7. TARGET_NUTRIENTS: Array of nutrients being addressed (2-4 items)
 
 Focus on:
 - Molecular-level explanations of how nutrients work
@@ -520,17 +602,47 @@ Focus on:
 - Health goal alignment
 - Practical implementation tips
 
-Format as JSON array with exact field names: type, priority, title, description, reasoning, suggestedFoods, targetNutrients
+RESPONSE FORMAT:
+{
+  "recommendations": [
+    {
+      "type": "deficiency_alert",
+      "priority": "high",
+      "title": "Iron Absorption Enhancement",
+      "description": "Your iron levels are below optimal. Iron is critical for oxygen transport via hemoglobin and energy production in mitochondria.",
+      "reasoning": "Based on your vegan lifestyle and health goals, increasing iron with vitamin C will support energy and cognitive function.",
+      "suggestedFoods": ["Spinach with bell peppers", "Lentils with citrus", "Quinoa with strawberries"],
+      "targetNutrients": ["Iron", "Vitamin C", "Folate"]
+    }
+  ]
+}
 `
   }
 
   private static parseRecommendations(content: string): AIRecommendation[] {
     try {
-      // Try to extract JSON from the response
-      const jsonMatch = content.match(/\[[\s\S]*\]/)
-      if (jsonMatch) {
-        const recommendations = JSON.parse(jsonMatch[0])
-        return recommendations.map((rec: any) => ({
+      // Parse the JSON response
+      const parsed = JSON.parse(content)
+      
+      // Handle the new format with recommendations array
+      if (parsed.recommendations && Array.isArray(parsed.recommendations)) {
+        return parsed.recommendations.map((rec: any) => ({
+          id: Math.random().toString(36).substr(2, 9),
+          type: rec.type || 'optimization_tip',
+          priority: rec.priority || 'medium',
+          title: rec.title || 'Nutrition Tip',
+          description: rec.description || '',
+          reasoning: rec.reasoning || '',
+          suggestedFoods: Array.isArray(rec.suggestedFoods) ? rec.suggestedFoods : [],
+          targetNutrients: Array.isArray(rec.targetNutrients) ? rec.targetNutrients : [],
+          createdAt: new Date(),
+          isRead: false
+        }))
+      }
+      
+      // Handle direct array format
+      if (Array.isArray(parsed)) {
+        return parsed.map((rec: any) => ({
           id: Math.random().toString(36).substr(2, 9),
           type: rec.type || 'optimization_tip',
           priority: rec.priority || 'medium',
@@ -545,9 +657,31 @@ Format as JSON array with exact field names: type, priority, title, description,
       }
     } catch (error) {
       console.error('Error parsing AI recommendations:', error)
+      
+      // Try to extract JSON from the response as fallback
+      try {
+        const jsonMatch = content.match(/\[[\s\S]*\]/)
+        if (jsonMatch) {
+          const recommendations = JSON.parse(jsonMatch[0])
+          return recommendations.map((rec: any) => ({
+            id: Math.random().toString(36).substr(2, 9),
+            type: rec.type || 'optimization_tip',
+            priority: rec.priority || 'medium',
+            title: rec.title || 'Nutrition Tip',
+            description: rec.description || '',
+            reasoning: rec.reasoning || '',
+            suggestedFoods: Array.isArray(rec.suggestedFoods) ? rec.suggestedFoods : [],
+            targetNutrients: Array.isArray(rec.targetNutrients) ? rec.targetNutrients : [],
+            createdAt: new Date(),
+            isRead: false
+          }))
+        }
+      } catch (fallbackError) {
+        console.error('Fallback parsing also failed:', fallbackError)
+      }
     }
 
-    // Fallback parsing
+    // Final fallback
     return [{
       id: Math.random().toString(36).substr(2, 9),
       type: 'optimization_tip',
@@ -637,6 +771,27 @@ Format as JSON array with exact field names: type, priority, title, description,
     })
 
     return recommendations
+  }
+}
+
+// Performance monitoring service
+export class PerformanceService {
+  static getMetrics() {
+    return {
+      ...performanceMetrics,
+      cacheHitRate: performanceMetrics.totalRequests > 0 
+        ? (performanceMetrics.cacheHits / performanceMetrics.totalRequests * 100).toFixed(1) + '%'
+        : '0%'
+    }
+  }
+  
+  static clearCache() {
+    apiCache.clear()
+    console.log('Cache cleared')
+  }
+  
+  static getCacheSize() {
+    return apiCache.size
   }
 }
 

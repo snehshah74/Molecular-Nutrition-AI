@@ -14,9 +14,10 @@ interface WelcomeCardProps {
   userProfile: any
   molecularBalanceScore: number
   lastLogin?: string
+  onNavigate?: (page: string) => void
 }
 
-export function WelcomeCard({ userProfile, molecularBalanceScore, lastLogin }: WelcomeCardProps) {
+export function WelcomeCard({ userProfile, molecularBalanceScore, lastLogin, onNavigate }: WelcomeCardProps) {
   const getGreeting = () => {
     const hour = new Date().getHours()
     if (hour < 12) return 'Good morning'
@@ -158,6 +159,7 @@ export function WelcomeCard({ userProfile, molecularBalanceScore, lastLogin }: W
           transition={{ delay: 0.9 }}
         >
           <motion.button
+            onClick={() => onNavigate?.('food-log')}
             className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -167,6 +169,7 @@ export function WelcomeCard({ userProfile, molecularBalanceScore, lastLogin }: W
           </motion.button>
           
           <motion.button
+            onClick={() => onNavigate?.('ai-insights')}
             className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -177,6 +180,7 @@ export function WelcomeCard({ userProfile, molecularBalanceScore, lastLogin }: W
           </motion.button>
           
           <motion.button
+            onClick={() => onNavigate?.('progress')}
             className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}

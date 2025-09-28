@@ -5,19 +5,21 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { 
   User, 
-  Calendar, 
   Heart, 
   Target, 
   CheckCircle,
   ArrowRight,
   AlertCircle
 } from 'lucide-react'
-import type { UserProfileFormData, HealthGoal } from '@/types'
+import type { HealthGoal } from '@/types'
 import { cn } from '@/lib/utils'
 
 const userProfileSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters').max(50, 'Name must be less than 50 characters'),
   age: z.number().min(1, 'Age must be at least 1').max(120, 'Age must be less than 120'),
   sex: z.enum(['male', 'female', 'other']),
+  height: z.number().min(100, 'Height must be at least 100cm').max(250, 'Height must be less than 250cm'),
+  weight: z.number().min(30, 'Weight must be at least 30kg').max(300, 'Weight must be less than 300kg'),
   ethnicity: z.string().min(1, 'Ethnicity is required'),
   region: z.string().min(1, 'Region is required'),
   medicalHistory: z.array(z.string()),
@@ -25,10 +27,10 @@ const userProfileSchema = z.object({
   healthGoals: z.array(z.string()).min(1, 'Select at least one health goal')
 }).refine((data) => {
   // Custom validation to ensure all fields are filled
-  return data.age && data.sex && data.ethnicity && data.region && data.lifestyle
+  return data.name && data.age && data.sex && data.height && data.weight && data.ethnicity && data.region && data.lifestyle
 }, {
   message: "All fields are required",
-  path: ["age"] // This will show the error on the age field
+  path: ["name"] // This will show the error on the name field
 })
 
 const ethnicities = [
@@ -58,8 +60,8 @@ const healthGoals: { value: HealthGoal; label: string; icon: string }[] = [
 ]
 
 interface UserProfileSetupProps {
-  onComplete: (profile: UserProfileFormData) => void
-  initialData?: Partial<UserProfileFormData>
+  onComplete: (profile: any) => void
+  initialData?: any
 }
 
 export function UserProfileSetup({ onComplete, initialData }: UserProfileSetupProps) {
@@ -73,11 +75,14 @@ export function UserProfileSetup({ onComplete, initialData }: UserProfileSetupPr
     formState: { errors },
     watch,
     setValue
-  } = useForm<UserProfileFormData>({
+  } = useForm({
     resolver: zodResolver(userProfileSchema),
     defaultValues: {
+      name: initialData?.name || '',
       age: initialData?.age || 25,
       sex: initialData?.sex || 'other',
+      height: initialData?.height || 0,
+      weight: initialData?.weight || 0,
       ethnicity: initialData?.ethnicity || '',
       region: initialData?.region || '',
       medicalHistory: initialData?.medicalHistory || [],
@@ -86,7 +91,7 @@ export function UserProfileSetup({ onComplete, initialData }: UserProfileSetupPr
     }
   })
 
-  const onSubmit = (data: UserProfileFormData) => {
+  const onSubmit = (data: any) => {
     console.log('=== FORM SUBMISSION STARTED ===')
     console.log('Form data:', data)
     console.log('Selected goals:', selectedGoals)
@@ -94,10 +99,13 @@ export function UserProfileSetup({ onComplete, initialData }: UserProfileSetupPr
     console.log('Current step:', currentStep)
     
     // Validate all required fields
-    if (!data.age || !data.sex || !data.ethnicity || !data.region || !data.lifestyle) {
+    if (!data.name || !data.age || !data.sex || !data.height || !data.weight || !data.ethnicity || !data.region || !data.lifestyle) {
       console.error('Missing required fields:', {
+        name: data.name,
         age: data.age,
         sex: data.sex,
+        height: data.height,
+        weight: data.weight,
         ethnicity: data.ethnicity,
         region: data.region,
         lifestyle: data.lifestyle
@@ -148,22 +156,6 @@ export function UserProfileSetup({ onComplete, initialData }: UserProfileSetupPr
     )
   }
 
-  // Test function with random data
-  const testWithRandomData = () => {
-    console.log('=== TESTING WITH RANDOM DATA ===')
-    const randomData = {
-      age: 25,
-      sex: 'female' as const,
-      ethnicity: 'Asian',
-      region: 'North America',
-      medicalHistory: ['none'],
-      lifestyle: 'vegan' as const,
-      healthGoals: ['muscle_gain', 'energy_boost'] as HealthGoal[]
-    }
-    
-    console.log('Random test data:', randomData)
-    onComplete(randomData)
-  }
 
   const nextStep = () => {
     if (currentStep < 3) {
@@ -207,38 +199,6 @@ export function UserProfileSetup({ onComplete, initialData }: UserProfileSetupPr
             <p className="text-gray-600 dark:text-gray-400 mb-4">
               Let's create your personalized nutrition profile
             </p>
-            {/* Test Buttons */}
-            <div className="flex space-x-2">
-              <motion.button
-                onClick={testWithRandomData}
-                className="btn-secondary text-sm"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                🧪 Test with Random Data
-              </motion.button>
-              <motion.button
-                onClick={() => {
-                  console.log('=== DIRECT PROFILE SAVE TEST ===')
-                  const testData = {
-                    age: 25,
-                    sex: 'male' as const,
-                    ethnicity: 'African American',
-                    region: 'South America',
-                    medicalHistory: [],
-                    lifestyle: 'vegan' as const,
-                    healthGoals: ['mental_clarity', 'muscle_gain'] as HealthGoal[]
-                  }
-                  console.log('Direct test data:', testData)
-                  onComplete(testData)
-                }}
-                className="btn-secondary text-sm"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                🔧 Direct Save Test
-              </motion.button>
-            </div>
           </div>
 
           {/* Progress Steps */}
@@ -293,7 +253,7 @@ export function UserProfileSetup({ onComplete, initialData }: UserProfileSetupPr
               {currentStep === 1 && (
                 <div className="space-y-6">
                   <div className="text-center mb-6">
-                    <Calendar className="h-12 w-12 text-primary-600 dark:text-primary-400 mx-auto mb-3" />
+                    <User className="h-12 w-12 text-primary-600 dark:text-primary-400 mx-auto mb-3" />
                     <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
                       Basic Information
                     </h2>
@@ -303,6 +263,26 @@ export function UserProfileSetup({ onComplete, initialData }: UserProfileSetupPr
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="md:col-span-2">
+                      <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Full Name
+                      </label>
+                      <input
+                        id="name"
+                        type="text"
+                        autoComplete="name"
+                        {...register('name')}
+                        className={cn("input", errors.name && "input-error")}
+                        placeholder="Enter your full name"
+                      />
+                      {errors.name && (
+                        <p className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
+                          <AlertCircle className="h-4 w-4 mr-1" />
+                          {String(errors.name.message)}
+                        </p>
+                      )}
+                    </div>
+
                     <div>
                       <label htmlFor="age" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Age
@@ -318,7 +298,7 @@ export function UserProfileSetup({ onComplete, initialData }: UserProfileSetupPr
                       {errors.age && (
                         <p className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
                           <AlertCircle className="h-4 w-4 mr-1" />
-                          {errors.age.message}
+                          {String(errors.age.message)}
                         </p>
                       )}
                     </div>
@@ -333,10 +313,62 @@ export function UserProfileSetup({ onComplete, initialData }: UserProfileSetupPr
                         {...register('sex')}
                         className={cn("input", errors.sex && "input-error")}
                       >
+                        <option value="">Select sex</option>
                         <option value="male">Male</option>
                         <option value="female">Female</option>
                         <option value="other">Other</option>
                       </select>
+                      {errors.sex && (
+                        <p className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
+                          <AlertCircle className="h-4 w-4 mr-1" />
+                          {String(errors.sex.message)}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label htmlFor="height" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Height (cm)
+                      </label>
+                      <input
+                        id="height"
+                        type="number"
+                        autoComplete="off"
+                        {...register('height', { valueAsNumber: true })}
+                        className={cn("input", errors.height && "input-error")}
+                        placeholder="e.g., 170"
+                        min="100"
+                        max="250"
+                      />
+                      {errors.height && (
+                        <p className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
+                          <AlertCircle className="h-4 w-4 mr-1" />
+                          {String(errors.height.message)}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label htmlFor="weight" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Weight (kg)
+                      </label>
+                      <input
+                        id="weight"
+                        type="number"
+                        autoComplete="off"
+                        {...register('weight', { valueAsNumber: true })}
+                        className={cn("input", errors.weight && "input-error")}
+                        placeholder="e.g., 70"
+                        min="30"
+                        max="300"
+                        step="0.1"
+                      />
+                      {errors.weight && (
+                        <p className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
+                          <AlertCircle className="h-4 w-4 mr-1" />
+                          {String(errors.weight.message)}
+                        </p>
+                      )}
                     </div>
 
                     <div>
@@ -398,7 +430,7 @@ export function UserProfileSetup({ onComplete, initialData }: UserProfileSetupPr
                         <motion.button
                           key={lifestyle}
                           type="button"
-                          onClick={() => setValue('lifestyle', lifestyle as any)}
+                          onClick={() => setValue('lifestyle', lifestyle)}
                           className={cn(
                             "p-3 rounded-lg border-2 transition-all duration-200 text-center",
                             watch('lifestyle') === lifestyle

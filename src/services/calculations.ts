@@ -7,24 +7,39 @@ import type {
 // Daily nutrient targets based on user profile
 export class NutrientTargets {
   static getMacronutrientTargets(userProfile: UserProfile): Macronutrient[] {
-    const { age, sex, healthGoals } = userProfile
+    const { age, sex, height, weight, healthGoals } = userProfile
     
-    // Base calorie needs (simplified calculation)
-    let baseCalories = sex === 'male' ? 2000 : 1800
+    // Calculate BMR using Harris-Benedict equation
+    let bmr: number
+    if (sex === 'male') {
+      bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age)
+    } else {
+      bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age)
+    }
     
-    // Adjust for age
-    if (age < 30) baseCalories += 200
-    else if (age > 50) baseCalories -= 200
+    // Activity factor (assuming moderate activity level)
+    const activityFactor = 1.55
+    let baseCalories = Math.round(bmr * activityFactor)
     
     // Adjust for health goals
     if (healthGoals.includes('muscle_gain')) baseCalories += 300
     if (healthGoals.includes('weight_loss')) baseCalories -= 300
     
-    // Macronutrient distribution
-    const proteinGrams = Math.round(baseCalories * 0.25 / 4) // 25% of calories
-    const carbGrams = Math.round(baseCalories * 0.45 / 4)   // 45% of calories
-    const fatGrams = Math.round(baseCalories * 0.30 / 9)    // 30% of calories
-    const fiberGrams = 25 // Standard recommendation
+    // BMI-based adjustments
+    const bmi = weight / ((height / 100) ** 2)
+    if (bmi < 18.5) {
+      baseCalories += 200 // Underweight - increase calories
+    } else if (bmi > 30) {
+      baseCalories -= 400 // Obese - more aggressive deficit
+    }
+    
+    // Macronutrient distribution - protein based on body weight
+    const proteinGrams = Math.round(weight * 1.6) // 1.6g per kg body weight
+    const proteinCalories = proteinGrams * 4
+    const remainingCalories = baseCalories - proteinCalories
+    const carbGrams = Math.round(remainingCalories * 0.55 / 4)   // 55% of remaining calories
+    const fatGrams = Math.round(remainingCalories * 0.45 / 9)    // 45% of remaining calories
+    const fiberGrams = Math.round(weight * 0.4) // 0.4g per kg body weight
     
     return [
       {
@@ -66,20 +81,20 @@ export class NutrientTargets {
   }
   
   static getMicronutrientTargets(userProfile: UserProfile): Micronutrient[] {
-    const { sex, lifestyle, medicalHistory } = userProfile
+    const { sex, weight, lifestyle, medicalHistory } = userProfile
     
-    // Base targets (RDA values)
+    // Base targets (RDA values) - some adjusted for body weight
     const targets: Micronutrient[] = [
       { name: 'Iron', amount: sex === 'female' ? 18 : 8, unit: 'mg', status: 'good', category: 'mineral' },
-      { name: 'Calcium', amount: 1000, unit: 'mg', status: 'good', category: 'mineral' },
-      { name: 'Vitamin C', amount: 90, unit: 'mg', status: 'good', category: 'vitamin' },
-      { name: 'Vitamin D', amount: 600, unit: 'IU', status: 'good', category: 'vitamin' },
+      { name: 'Calcium', amount: Math.round(weight * 12.5), unit: 'mg', status: 'good', category: 'mineral' }, // 12.5mg per kg
+      { name: 'Vitamin C', amount: Math.round(weight * 1.5), unit: 'mg', status: 'good', category: 'vitamin' }, // 1.5mg per kg
+      { name: 'Vitamin D', amount: Math.round(weight * 8), unit: 'IU', status: 'good', category: 'vitamin' }, // 8 IU per kg
       { name: 'Vitamin B12', amount: 2.4, unit: 'mcg', status: 'good', category: 'vitamin' },
       { name: 'Zinc', amount: sex === 'male' ? 11 : 8, unit: 'mg', status: 'good', category: 'mineral' },
-      { name: 'Magnesium', amount: sex === 'male' ? 420 : 320, unit: 'mg', status: 'good', category: 'mineral' },
+      { name: 'Magnesium', amount: Math.round(weight * 5), unit: 'mg', status: 'good', category: 'mineral' }, // 5mg per kg
       { name: 'Folate', amount: 400, unit: 'mcg', status: 'good', category: 'vitamin' },
       { name: 'Vitamin A', amount: sex === 'male' ? 900 : 700, unit: 'mcg', status: 'good', category: 'vitamin' },
-      { name: 'Vitamin E', amount: 15, unit: 'mg', status: 'good', category: 'vitamin' }
+      { name: 'Vitamin E', amount: Math.round(weight * 0.2), unit: 'mg', status: 'good', category: 'vitamin' } // 0.2mg per kg
     ]
     
     // Adjust for lifestyle

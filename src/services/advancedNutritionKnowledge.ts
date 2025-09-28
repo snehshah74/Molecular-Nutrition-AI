@@ -190,6 +190,90 @@ export class AdvancedNutritionKnowledge {
         { condition: 'gut_health', dose_range: '10-50 billion CFU/day', duration: '4-12 weeks', contraindications: ['immunocompromised'] },
         { condition: 'immune_support', dose_range: '20-100 billion CFU/day', duration: 'ongoing', contraindications: ['central_line'] }
       ]
+    },
+
+    zinc_picolinate: {
+      name: 'Zinc Picolinate',
+      category: 'mineral',
+      molecularWeight: 305.6,
+      bioavailability: {
+        food_source: 30,
+        supplement_form: 85,
+        factors_affecting: ['phytates', 'calcium_intake', 'iron_status']
+      },
+      interactions: {
+        enhances: ['immune_function', 'wound_healing', 'testosterone_production'],
+        inhibits: ['copper_absorption'],
+        synergizes: ['vitamin_c', 'magnesium', 'b6']
+      },
+      genetic_variants: [
+        { gene: 'SLC30A8', variant: 'rs13266634', impact: 'Affects zinc transport in pancreatic beta cells' },
+        { gene: 'MT1A', variant: 'rs11640851', impact: 'Influences zinc binding and transport' }
+      ],
+      clinical_evidence: [
+        { study_type: 'Meta', strength: 'Strong', conclusion: 'Reduces common cold duration by 33%' },
+        { study_type: 'RCT', strength: 'Moderate', conclusion: 'May improve testosterone levels in deficient men' }
+      ],
+      therapeutic_doses: [
+        { condition: 'immune_support', dose_range: '15-30mg/day', duration: 'ongoing', contraindications: ['copper_deficiency'] },
+        { condition: 'testosterone_support', dose_range: '30-50mg/day', duration: '3-6 months', contraindications: ['prostate_cancer'] }
+      ]
+    },
+
+    quercetin: {
+      name: 'Quercetin',
+      category: 'phytonutrient',
+      molecularWeight: 302.2,
+      bioavailability: {
+        food_source: 5,
+        supplement_form: 25,
+        factors_affecting: ['piperine_addition', 'fat_content', 'food_matrix']
+      },
+      interactions: {
+        enhances: ['antioxidant_capacity', 'anti_inflammatory_response', 'immune_function'],
+        inhibits: ['histamine_release'],
+        synergizes: ['vitamin_c', 'bromelain', 'resveratrol']
+      },
+      genetic_variants: [
+        { gene: 'COMT', variant: 'rs4680', impact: 'Affects quercetin metabolism and effectiveness' },
+        { gene: 'CYP1A2', variant: 'rs762551', impact: 'Influences flavonoid metabolism' }
+      ],
+      clinical_evidence: [
+        { study_type: 'Meta', strength: 'Moderate', conclusion: 'May reduce blood pressure by 3-4 mmHg' },
+        { study_type: 'RCT', strength: 'Moderate', conclusion: 'May improve exercise performance and recovery' }
+      ],
+      therapeutic_doses: [
+        { condition: 'allergy_support', dose_range: '500-1000mg/day', duration: '2-4 weeks', contraindications: ['kidney_disease'] },
+        { condition: 'exercise_performance', dose_range: '1000-2000mg/day', duration: '1-2 weeks', contraindications: ['liver_disease'] }
+      ]
+    },
+
+    resveratrol: {
+      name: 'Resveratrol',
+      category: 'phytonutrient',
+      molecularWeight: 228.2,
+      bioavailability: {
+        food_source: 1,
+        supplement_form: 20,
+        factors_affecting: ['piperine_addition', 'fat_content', 'timing']
+      },
+      interactions: {
+        enhances: ['sirtuin_activation', 'antioxidant_capacity', 'cardiovascular_health'],
+        inhibits: ['inflammation', 'oxidative_stress'],
+        synergizes: ['quercetin', 'curcumin', 'pterostilbene']
+      },
+      genetic_variants: [
+        { gene: 'SIRT1', variant: 'rs7069102', impact: 'Affects sirtuin activation response' },
+        { gene: 'COMT', variant: 'rs4680', impact: 'Influences resveratrol metabolism' }
+      ],
+      clinical_evidence: [
+        { study_type: 'Meta', strength: 'Moderate', conclusion: 'May improve endothelial function' },
+        { study_type: 'RCT', strength: 'Weak', conclusion: 'Limited evidence for longevity benefits in humans' }
+      ],
+      therapeutic_doses: [
+        { condition: 'cardiovascular_health', dose_range: '100-500mg/day', duration: 'ongoing', contraindications: ['bleeding_disorders'] },
+        { condition: 'anti_aging', dose_range: '250-1000mg/day', duration: 'ongoing', contraindications: ['pregnancy'] }
+      ]
     }
   }
 
@@ -252,6 +336,11 @@ export class AdvancedNutritionKnowledge {
     const mealTimingInsights = this.getMealTimingInsights()
     const geneticConsiderations = this.getGeneticConsiderations()
     const therapeuticNutrients = this.getTherapeuticNutrients(deficiencies)
+    const bmiRecommendations = this.getBMIRecommendations(
+      userProfile.weight / ((userProfile.height / 100) ** 2), 
+      userProfile
+    )
+    const calorieNeeds = this.calculatePersonalizedCalories(userProfile)
 
     return `
 You are an advanced molecular nutrition AI with expertise in:
@@ -260,6 +349,8 @@ You are an advanced molecular nutrition AI with expertise in:
 - Advanced supplement protocols
 - Clinical nutrition research
 - Bioavailability optimization
+- Metabolic health optimization
+- Precision medicine approaches
 
 USER PROFILE ANALYSIS:
 ${JSON.stringify(userProfile, null, 2)}
@@ -268,6 +359,14 @@ CURRENT NUTRITION STATUS:
 ${JSON.stringify(dailyIntake, null, 2)}
 
 IDENTIFIED DEFICIENCIES: ${deficiencies.join(', ')}
+
+BMI ANALYSIS & RECOMMENDATIONS:
+${bmiRecommendations.join('\n')}
+
+PERSONALIZED CALORIE NEEDS:
+- Maintenance: ${calorieNeeds.maintenance} kcal/day
+- Weight Loss: ${calorieNeeds.deficit} kcal/day (20% deficit)
+- Weight Gain: ${calorieNeeds.surplus} kcal/day (10% surplus)
 
 ADVANCED NUTRITION INSIGHTS:
 
@@ -283,6 +382,13 @@ ${geneticConsiderations}
 THERAPEUTIC NUTRIENT PROTOCOLS:
 ${therapeuticNutrients}
 
+CLINICAL EVIDENCE DATABASE:
+- Vitamin D3: Strong evidence for immune support, bone health, mood regulation
+- Omega-3 EPA/DHA: Strong evidence for cardiovascular health, anti-inflammatory effects
+- Magnesium: Strong evidence for sleep quality, muscle function, blood pressure
+- Curcumin: Strong evidence for anti-inflammatory effects, joint health
+- Probiotics: Strong evidence for gut health, immune function
+
 Provide recommendations that include:
 1. Personalized nutrient timing based on circadian rhythms
 2. Bioavailability optimization strategies
@@ -290,8 +396,12 @@ Provide recommendations that include:
 4. Advanced supplement protocols with clinical evidence
 5. Meal timing optimization for metabolic health
 6. Molecular mechanisms and scientific rationale
+7. BMI-specific nutrition strategies
+8. Calorie optimization for health goals
+9. Evidence-based dosing recommendations
+10. Safety considerations and contraindications
 
-Format as JSON with detailed molecular explanations and clinical evidence.
+Format as JSON with detailed molecular explanations, clinical evidence, and actionable recommendations.
 `
   }
 
@@ -359,5 +469,93 @@ ${nutrient.name.toUpperCase()}:
   // Get circadian nutrition insights
   static getCircadianNutritionInsights(timeOfDay: string): CircadianNutrition | null {
     return this.CIRCADIAN_NUTRITION.find(phase => phase.time_of_day === timeOfDay) || null
+  }
+
+  // Get BMI-based nutrition recommendations
+  static getBMIRecommendations(bmi: number, userProfile: any): string[] {
+    const recommendations: string[] = []
+    
+    if (bmi < 18.5) {
+      recommendations.push(
+        "Underweight status detected. Focus on nutrient-dense, calorie-rich foods.",
+        "Increase healthy fats: avocados, nuts, olive oil, fatty fish.",
+        "Prioritize protein: lean meats, legumes, dairy, eggs for muscle building.",
+        "Consider smaller, frequent meals to increase caloric intake.",
+        "Monitor micronutrient status - underweight individuals often have deficiencies."
+      )
+    } else if (bmi >= 18.5 && bmi < 25) {
+      recommendations.push(
+        "Healthy weight range. Maintain balanced macronutrient distribution.",
+        "Focus on nutrient density over calorie density.",
+        "Prioritize whole foods, lean proteins, complex carbohydrates.",
+        "Maintain regular meal timing for optimal metabolism."
+      )
+    } else if (bmi >= 25 && bmi < 30) {
+      recommendations.push(
+        "Overweight status. Focus on calorie deficit with nutrient density.",
+        "Increase fiber intake for satiety: vegetables, fruits, whole grains.",
+        "Prioritize lean proteins to preserve muscle mass during weight loss.",
+        "Consider intermittent fasting or time-restricted eating.",
+        "Monitor portion sizes and meal frequency."
+      )
+    } else {
+      recommendations.push(
+        "Obesity status. Comprehensive lifestyle intervention needed.",
+        "Significant calorie deficit required with medical supervision.",
+        "Focus on high-volume, low-calorie foods: vegetables, lean proteins.",
+        "Consider bariatric surgery evaluation if BMI > 40.",
+        "Prioritize metabolic health: blood sugar control, inflammation reduction."
+      )
+    }
+
+    // Add gender-specific recommendations
+    if (userProfile.sex === 'female') {
+      recommendations.push(
+        "Women may need more iron and folate, especially during reproductive years.",
+        "Consider calcium and vitamin D for bone health.",
+        "Monitor for PCOS-related insulin resistance if applicable."
+      )
+    } else if (userProfile.sex === 'male') {
+      recommendations.push(
+        "Men typically need more calories and protein for muscle maintenance.",
+        "Monitor for cardiovascular risk factors with higher BMI.",
+        "Consider zinc and magnesium for testosterone support."
+      )
+    }
+
+    return recommendations
+  }
+
+  // Calculate personalized calorie needs based on BMI and activity
+  static calculatePersonalizedCalories(userProfile: any): { maintenance: number; deficit: number; surplus: number } {
+    const bmi = userProfile.weight / ((userProfile.height / 100) ** 2)
+    
+    // Base metabolic rate (simplified Harris-Benedict)
+    let bmr: number
+    if (userProfile.sex === 'male') {
+      bmr = 88.362 + (13.397 * userProfile.weight) + (4.799 * userProfile.height) - (5.677 * userProfile.age)
+    } else {
+      bmr = 447.593 + (9.247 * userProfile.weight) + (3.098 * userProfile.height) - (4.330 * userProfile.age)
+    }
+
+    // Activity factor (assuming moderate activity)
+    const activityFactor = 1.55
+    const maintenance = Math.round(bmr * activityFactor)
+    
+    // Adjust based on BMI goals
+    let deficit = Math.round(maintenance * 0.8) // 20% deficit
+    let surplus = Math.round(maintenance * 1.1) // 10% surplus
+
+    if (bmi < 18.5) {
+      // Underweight - focus on surplus
+      deficit = Math.round(maintenance * 0.95)
+      surplus = Math.round(maintenance * 1.2)
+    } else if (bmi > 30) {
+      // Obese - more aggressive deficit
+      deficit = Math.round(maintenance * 0.7)
+      surplus = Math.round(maintenance * 1.05)
+    }
+
+    return { maintenance, deficit, surplus }
   }
 }

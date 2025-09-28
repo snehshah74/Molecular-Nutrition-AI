@@ -1,8 +1,11 @@
 // User Profile Types
 export interface UserProfile {
   id: string;
+  name: string;
   age: number;
   sex: 'male' | 'female' | 'other';
+  height: number; // in cm
+  weight: number; // in kg
   ethnicity: string;
   region: string;
   medicalHistory: string[];
@@ -134,8 +137,11 @@ export interface OpenRouterResponse {
 
 // Form Types
 export interface UserProfileFormData {
+  name: string;
   age: number;
   sex: 'male' | 'female' | 'other';
+  height: number;
+  weight: number;
   ethnicity: string;
   region: string;
   medicalHistory: string[];

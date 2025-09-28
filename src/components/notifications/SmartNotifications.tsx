@@ -22,6 +22,7 @@ interface SmartNotificationsProps {
   notifications?: Notification[]
   onNotificationRead?: (id: string) => void
   onNotificationDismiss?: (id: string) => void
+  onNavigate?: (page: string) => void
 }
 
 interface Notification {
@@ -53,13 +54,15 @@ export const SmartNotifications = memo(function SmartNotifications({
   dailyIntake,
   notifications = [],
   onNotificationRead,
-  onNotificationDismiss
+  onNotificationDismiss,
+  onNavigate
 }: SmartNotificationsProps) {
   const [showNotifications, setShowNotifications] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [filterType, setFilterType] = useState<'all' | 'unread' | 'read'>('unread')
   const [filterCategory, setFilterCategory] = useState<string>('all')
   const [_notificationRules] = useState<NotificationRule[]>([])
+  const [dismissedNotifications, setDismissedNotifications] = useState<Set<string>>(new Set())
 
   // Generate smart notifications based on user data
   const smartNotifications = useMemo(() => {
@@ -70,19 +73,20 @@ export const SmartNotifications = memo(function SmartNotifications({
 
     // Water intake reminder
     const waterIntake = dailyIntake.totalNutrients?.macronutrients?.find(m => m.name === 'Water')?.amount || 0
-    if (waterIntake < 2000) {
+    const waterTarget = userProfile.sex === 'male' ? 3700 : 2700 // ml per day
+    if (waterIntake < waterTarget * 0.6) {
       generated.push({
         id: 'water-reminder-1',
         type: 'reminder',
         priority: 'medium',
         title: 'Hydration Reminder',
-        message: 'You\'ve had less than 2L of water today. Stay hydrated for optimal molecular function!',
+        message: `You've had ${(waterIntake/1000).toFixed(1)}L of water today. Target: ${(waterTarget/1000).toFixed(1)}L for optimal molecular function!`,
         action: 'Log Water Intake',
         timestamp: new Date(now.getTime() - 30 * 60000), // 30 minutes ago
         isRead: false,
         isDismissed: false,
         category: 'wellness',
-        data: { targetAmount: 2500, currentAmount: waterIntake }
+        data: { targetAmount: waterTarget, currentAmount: waterIntake }
       })
     }
 
@@ -231,14 +235,19 @@ export const SmartNotifications = memo(function SmartNotifications({
                        (filterType === 'unread' && !notification.isRead) ||
                        (filterType === 'read' && notification.isRead)
       const categoryMatch = filterCategory === 'all' || notification.category === filterCategory
-      return typeMatch && categoryMatch && !notification.isDismissed
+      const notDismissed = !notification.isDismissed && !dismissedNotifications.has(notification.id)
+      return typeMatch && categoryMatch && notDismissed
     })
-  }, [allNotifications, filterType, filterCategory])
+  }, [allNotifications, filterType, filterCategory, dismissedNotifications])
 
   // Count unread notifications
   const unreadCount = useMemo(() => {
-    return allNotifications.filter(n => !n.isRead && !n.isDismissed).length
-  }, [allNotifications])
+    return allNotifications.filter(n => 
+      !n.isRead && 
+      !n.isDismissed && 
+      !dismissedNotifications.has(n.id)
+    ).length
+  }, [allNotifications, dismissedNotifications])
 
   // Get notification icon
   const getNotificationIcon = (type: string, priority: string) => {
@@ -277,19 +286,44 @@ export const SmartNotifications = memo(function SmartNotifications({
     // Handle different action types
     switch (notification.action) {
       case 'Log Water Intake':
-        // Navigate to water logging
+        onNavigate?.('food-log')
         break
       case 'Log Meal':
-        // Navigate to meal logging
+        onNavigate?.('food-log')
         break
       case 'View Recommendations':
-        // Navigate to recommendations
+        onNavigate?.('ai-insights')
+        break
+      case 'View Progress':
+        onNavigate?.('progress')
+        break
+      case 'View Dashboard':
+        onNavigate?.('dashboard')
         break
       case 'View Supplements':
-        // Navigate to supplements
+        onNavigate?.('supplements')
         break
       case 'Share Achievement':
-        // Share achievement
+        // Share achievement functionality
+        if (navigator.share) {
+          navigator.share({
+            title: notification.title,
+            text: notification.message,
+            url: window.location.href
+          })
+        } else {
+          // Fallback to copying to clipboard
+          navigator.clipboard.writeText(`${notification.title}: ${notification.message}`)
+        }
+        break
+      case 'View Sleep Tips':
+        onNavigate?.('education')
+        break
+      case 'View Weekly Report':
+        onNavigate?.('analytics')
+        break
+      case 'Log Exercise':
+        onNavigate?.('progress')
         break
       default:
         break
@@ -297,6 +331,9 @@ export const SmartNotifications = memo(function SmartNotifications({
   }
 
   const handleDismiss = (notificationId: string) => {
+    // Mark as dismissed locally for immediate UI update
+    setDismissedNotifications(prev => new Set([...prev, notificationId]))
+    
     if (onNotificationDismiss) {
       onNotificationDismiss(notificationId)
     }

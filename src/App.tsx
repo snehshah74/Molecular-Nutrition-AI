@@ -18,6 +18,7 @@ import { SupplementRecommendations } from '@/components/supplements/SupplementRe
 import { HealthTrendAnalysis } from '@/components/analytics/HealthTrendAnalysis'
 import { CommunityFeatures } from '@/components/community/CommunityFeatures'
 import { DebugPanel } from '@/components/debug/DebugPanel'
+import { PerformanceDashboard } from '@/components/debug/PerformanceDashboard'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { AlertCircle, X } from 'lucide-react'
 import type { UserProfileFormData } from '@/types'
@@ -107,6 +108,7 @@ function App() {
             <ModernNutrientDashboard 
               dailyIntake={dailyIntake} 
               userProfile={userProfile}
+              onNavigate={(page) => setCurrentPage(page as Page)}
             />
             <ErrorBoundary>
               <AIRecommendations
@@ -132,6 +134,7 @@ function App() {
           <ModernNutrientDashboard 
             dailyIntake={dailyIntake} 
             userProfile={userProfile}
+            onNavigate={(page) => setCurrentPage(page as Page)}
           />
         )
       case 'ai-insights':
@@ -339,6 +342,9 @@ function App() {
           dailyIntake={dailyIntake}
           recommendations={recommendations}
         />
+
+        {/* Performance Dashboard */}
+        <PerformanceDashboard />
       </ToastProvider>
     </ThemeProvider>
   )

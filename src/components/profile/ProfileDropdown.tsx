@@ -47,6 +47,9 @@ export function ProfileDropdown({ userProfile, onLogout, onUpdateProfile }: Prof
   }
 
   const getInitials = (profile: any) => {
+    if (profile?.name) {
+      return profile.name.split(' ').map((n: string) => n.charAt(0)).join('').toUpperCase().slice(0, 2)
+    }
     if (profile?.sex && profile?.age) {
       return `${profile.sex.charAt(0).toUpperCase()}${profile.age}`
     }
@@ -67,7 +70,7 @@ export function ProfileDropdown({ userProfile, onLogout, onUpdateProfile }: Prof
         </div>
         <div className="hidden sm:block text-left">
           <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-            {userProfile?.sex === 'male' ? 'Mr.' : userProfile?.sex === 'female' ? 'Ms.' : ''} ({userProfile?.age}y)
+            {userProfile?.name || `${userProfile?.sex === 'male' ? 'Mr.' : userProfile?.sex === 'female' ? 'Ms.' : ''} (${userProfile?.age}y)`}
           </div>
           <div className="text-xs text-gray-500 dark:text-gray-400">
             {formatLifestyle(userProfile?.lifestyle || 'User')}

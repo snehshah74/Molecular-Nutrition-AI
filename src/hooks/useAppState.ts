@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import type { UserProfile, DailyIntake, AIRecommendation, Meal } from '@/types'
 import { LocalStorageService } from '@/services/api'
-import { NutrientCalculations } from '@/services/calculations'
+import { NutrientCalculations, NutrientTargets } from '@/services/calculations'
 import { getTodayString } from '@/lib/utils'
 
 // Function to create sample nutrition data based on user profile
@@ -205,11 +205,16 @@ function createSampleNutritionData(profile: UserProfile): DailyIntake {
     ]
   }
   
-  // Calculate molecular balance score
+  // Calculate molecular balance score using user targets
+  const userTargets = {
+    macronutrients: NutrientTargets.getMacronutrientTargets(profile),
+    micronutrients: NutrientTargets.getMicronutrientTargets(profile)
+  }
+  
   const molecularBalanceScore = NutrientCalculations.calculateMolecularBalanceScore(
     totalNutrients.macronutrients,
     totalNutrients.micronutrients,
-    { macronutrients: [], micronutrients: [] }
+    userTargets
   )
 
   return {
@@ -302,11 +307,16 @@ export function useAppState() {
       const updatedMeals = [...currentIntake.meals, meal]
       const totalNutrients = NutrientCalculations.calculateDailyTotals(updatedMeals)
       
-      // Calculate molecular balance score
+      // Calculate molecular balance score using user targets
+      const userTargets = {
+        macronutrients: NutrientTargets.getMacronutrientTargets(userProfile),
+        micronutrients: NutrientTargets.getMicronutrientTargets(userProfile)
+      }
+      
       const molecularBalanceScore = NutrientCalculations.calculateMolecularBalanceScore(
         totalNutrients.macronutrients,
         totalNutrients.micronutrients,
-        { macronutrients: [], micronutrients: [] } // This would be user targets
+        userTargets
       )
 
       const updatedIntake: DailyIntake = {
@@ -335,10 +345,17 @@ export function useAppState() {
       )
       
       const totalNutrients = NutrientCalculations.calculateDailyTotals(updatedMeals)
+      
+      // Calculate molecular balance score using user targets
+      const userTargets = {
+        macronutrients: NutrientTargets.getMacronutrientTargets(userProfile),
+        micronutrients: NutrientTargets.getMicronutrientTargets(userProfile)
+      }
+      
       const molecularBalanceScore = NutrientCalculations.calculateMolecularBalanceScore(
         totalNutrients.macronutrients,
         totalNutrients.micronutrients,
-        { macronutrients: [], micronutrients: [] }
+        userTargets
       )
 
       const updatedIntake: DailyIntake = {
@@ -364,10 +381,17 @@ export function useAppState() {
 
       const updatedMeals = dailyIntake.meals.filter(meal => meal.id !== mealId)
       const totalNutrients = NutrientCalculations.calculateDailyTotals(updatedMeals)
+      
+      // Calculate molecular balance score using user targets
+      const userTargets = {
+        macronutrients: NutrientTargets.getMacronutrientTargets(userProfile),
+        micronutrients: NutrientTargets.getMicronutrientTargets(userProfile)
+      }
+      
       const molecularBalanceScore = NutrientCalculations.calculateMolecularBalanceScore(
         totalNutrients.macronutrients,
         totalNutrients.micronutrients,
-        { macronutrients: [], micronutrients: [] }
+        userTargets
       )
 
       const updatedIntake: DailyIntake = {

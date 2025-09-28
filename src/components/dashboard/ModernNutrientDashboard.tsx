@@ -42,11 +42,13 @@ import { WelcomeCard } from './WelcomeCard'
 interface NutrientDashboardProps {
   dailyIntake: DailyIntake | null
   userProfile: any
+  onNavigate?: (page: string) => void
 }
 
 export const ModernNutrientDashboard = memo(function ModernNutrientDashboard({ 
   dailyIntake, 
-  userProfile 
+  userProfile,
+  onNavigate
 }: NutrientDashboardProps) {
   const [activeTab, setActiveTab] = useState<'overview' | 'macros' | 'micros' | 'trends' | 'insights'>('overview')
   const [nutrientTargets, setNutrientTargets] = useState<{
@@ -208,6 +210,7 @@ export const ModernNutrientDashboard = memo(function ModernNutrientDashboard({
         userProfile={userProfile}
         molecularBalanceScore={keyMetrics.score}
         lastLogin={new Date().toISOString()}
+        onNavigate={onNavigate}
       />
 
       {/* Key Metrics Grid */}

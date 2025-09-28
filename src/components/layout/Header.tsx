@@ -42,7 +42,7 @@ export function Header({ onMenuToggle, isMenuOpen, userProfile, onNavigate, curr
                 Molecular Nutrition AI
               </h1>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                {userProfile ? `Welcome, ${userProfile.sex === 'male' ? 'Mr.' : userProfile.sex === 'female' ? 'Ms.' : ''} (${userProfile.age}y)` : 'Personalized nutrition at the molecular level'}
+                {userProfile ? `Welcome, ${userProfile.name || (userProfile.sex === 'male' ? 'Mr.' : userProfile.sex === 'female' ? 'Ms.' : '')} ${userProfile.age ? `(${userProfile.age}y)` : ''}` : 'Personalized nutrition at the molecular level'}
               </p>
             </div>
           </motion.div>
