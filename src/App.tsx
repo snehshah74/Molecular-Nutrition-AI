@@ -20,14 +20,15 @@ import { CommunityFeatures } from '@/components/community/CommunityFeatures'
 import { DebugPanel } from '@/components/debug/DebugPanel'
 import { PerformanceDashboard } from '@/components/debug/PerformanceDashboard'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
+import LandingPage from '@/components/landing/LandingPage'
 import { AlertCircle, X } from 'lucide-react'
 import type { UserProfileFormData } from '@/types'
 import { generateId } from '@/lib/utils'
 
-type Page = 'dashboard' | 'food-log' | 'nutrients' | 'ai-insights' | 'progress' | 'profile' | 'settings' | 'meal-planning' | 'education' | 'supplements' | 'analytics' | 'community'
+type Page = 'landing' | 'dashboard' | 'food-log' | 'nutrients' | 'ai-insights' | 'progress' | 'profile' | 'settings' | 'meal-planning' | 'education' | 'supplements' | 'analytics' | 'community'
 
 function App() {
-  const [currentPage, setCurrentPage] = useState<Page>('dashboard')
+  const [currentPage, setCurrentPage] = useState<Page>('landing')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   
   const {
@@ -66,10 +67,12 @@ function App() {
       saveUserProfile(profile)
       console.log('Profile saved successfully!')
       
-      // Force a small delay to ensure state updates
+      // Redirect to dashboard after profile completion
       setTimeout(() => {
         console.log('Current userProfile state:', userProfile)
-      }, 100)
+        console.log('Redirecting to dashboard...')
+        setCurrentPage('dashboard')
+      }, 500) // Increased delay to ensure state is updated
     } catch (error) {
       console.error('Error in handleProfileComplete:', error)
     }
@@ -97,6 +100,23 @@ function App() {
   }, [saveUserProfile])
 
   const renderPage = useMemo(() => {
+    switch (currentPage) {
+      case 'landing':
+        return <LandingPage onNavigate={(page) => {
+          if (page === 'dashboard' && !userProfile) {
+            // If user clicks "Get Started" but has no profile, show profile setup
+            setCurrentPage('profile' as Page)
+          } else {
+            setCurrentPage(page as Page)
+          }
+        }} />
+      default:
+        if (!userProfile) {
+          return <UserProfileSetup onComplete={handleProfileComplete} />
+        }
+        break
+    }
+
     if (!userProfile) {
       return <UserProfileSetup onComplete={handleProfileComplete} />
     }
@@ -292,45 +312,61 @@ function App() {
         </AnimatePresence>
 
         {/* Header */}
-        <Header 
-          onMenuToggle={() => setIsMenuOpen(!isMenuOpen)} 
-          isMenuOpen={isMenuOpen}
-          userProfile={userProfile}
-          onNavigate={(page) => setCurrentPage(page as Page)}
-          currentPage={currentPage}
-          onLogout={handleLogout}
-          onUpdateProfile={handleUpdateProfile}
-          dailyIntake={dailyIntake}
-        />
-
-        <div className="flex">
-          {/* Sidebar */}
-          <Sidebar
-            isOpen={isMenuOpen}
-            onClose={() => setIsMenuOpen(false)}
+        {currentPage !== 'landing' && (
+          <Header 
+            onMenuToggle={() => setIsMenuOpen(!isMenuOpen)} 
+            isMenuOpen={isMenuOpen}
+            userProfile={userProfile}
+            onNavigate={(page) => setCurrentPage(page as Page)}
             currentPage={currentPage}
-            onPageChange={(page) => setCurrentPage(page as Page)}
+            onLogout={handleLogout}
+            onUpdateProfile={handleUpdateProfile}
+            dailyIntake={dailyIntake}
           />
+        )}
 
-        {/* Main Content */}
-        <main className="flex-1 min-h-screen">
+        {currentPage !== 'landing' && (
+          <div className="flex">
+            {/* Sidebar */}
+            <Sidebar
+              isOpen={isMenuOpen}
+              onClose={() => setIsMenuOpen(false)}
+              currentPage={currentPage}
+              onPageChange={(page) => setCurrentPage(page as Page)}
+            />
+
+            {/* Main Content */}
+            <main className="flex-1 min-h-screen">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <motion.div
-              key={currentPage}
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -20, scale: 0.95 }}
-              transition={{ 
-                duration: 0.4,
-                ease: [0.4, 0.0, 0.2, 1],
-                scale: { duration: 0.3 }
-              }}
-            >
-              {renderPage}
-            </motion.div>
+              <motion.div
+                key={currentPage}
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                transition={{ 
+                  duration: 0.4,
+                  ease: [0.4, 0.0, 0.2, 1],
+                  scale: { duration: 0.3 }
+                }}
+              >
+                {renderPage}
+              </motion.div>
+            </div>
+          </main>
           </div>
-        </main>
-        </div>
+        )}
+
+        {/* Landing Page Content */}
+        {currentPage === 'landing' && (
+          <motion.div
+            key={currentPage}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+          >
+            {renderPage}
+          </motion.div>
+        )}
 
         {/* Footer */}
         <Footer />
