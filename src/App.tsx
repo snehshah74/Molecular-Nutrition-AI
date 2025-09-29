@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { ToastProvider } from '@/contexts/ToastContext'
+import { AuthProvider } from '@/contexts/AuthContext'
 import { useAppState } from '@/hooks/useAppState'
 import type { UserProfile } from '@/types'
 import { Header } from '@/components/layout/Header'
@@ -9,6 +10,9 @@ import { Sidebar } from '@/components/layout/Sidebar'
 import { Footer } from '@/components/layout/Footer'
 import { UserProfileSetup } from '@/components/profiles/UserProfileSetup'
 import { WelcomePage } from '@/components/welcome/WelcomePage'
+import { AuthModal } from '@/components/auth/AuthModal'
+import { MolecularBalanceDashboard } from '@/components/molecular/MolecularBalanceDashboard'
+import { BiomarkerTracker } from '@/components/molecular/BiomarkerTracker'
 import { FoodLogger } from '@/components/logging/FoodLogger'
 import { ModernNutrientDashboard } from '@/components/dashboard/ModernNutrientDashboard'
 import { AIRecommendations } from '@/components/ai/AIRecommendations'
@@ -26,11 +30,13 @@ import { AlertCircle, X } from 'lucide-react'
 import type { UserProfileFormData } from '@/types'
 import { generateId } from '@/lib/utils'
 
-type Page = 'landing' | 'welcome' | 'dashboard' | 'food-log' | 'nutrients' | 'ai-insights' | 'progress' | 'profile' | 'settings' | 'meal-planning' | 'education' | 'supplements' | 'analytics' | 'community'
+type Page = 'landing' | 'welcome' | 'dashboard' | 'food-log' | 'nutrients' | 'ai-insights' | 'progress' | 'profile' | 'settings' | 'meal-planning' | 'education' | 'supplements' | 'analytics' | 'community' | 'biomarkers' | 'molecular'
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('landing')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [authMode, setAuthMode] = useState<'signin' | 'signup' | 'reset'>('signin')
   
   const {
     userProfile,
@@ -103,14 +109,20 @@ function App() {
   const renderPage = useMemo(() => {
     switch (currentPage) {
       case 'landing':
-        return <LandingPage onNavigate={(page) => {
-          if (page === 'dashboard' && !userProfile) {
-            // If user clicks "Get Started" but has no profile, show welcome page
-            setCurrentPage('welcome' as Page)
-          } else {
-            setCurrentPage(page as Page)
-          }
-        }} />
+        return <LandingPage 
+          onNavigate={(page) => {
+            if (page === 'dashboard' && !userProfile) {
+              // If user clicks "Get Started" but has no profile, show welcome page
+              setCurrentPage('welcome' as Page)
+            } else {
+              setCurrentPage(page as Page)
+            }
+          }}
+          onAuthClick={(mode) => {
+            setAuthMode(mode)
+            setShowAuthModal(true)
+          }}
+        />
       case 'welcome':
         return <WelcomePage onComplete={handleProfileComplete} />
       default:
@@ -128,6 +140,7 @@ function App() {
       case 'dashboard':
         return (
           <div className="space-y-8">
+            <MolecularBalanceDashboard userProfile={userProfile} />
             <ModernNutrientDashboard 
               dailyIntake={dailyIntake} 
               userProfile={userProfile}
@@ -249,6 +262,18 @@ function App() {
                 />
               </ErrorBoundary>
             )
+          case 'biomarkers':
+            return (
+              <ErrorBoundary>
+                <BiomarkerTracker userProfile={userProfile} />
+              </ErrorBoundary>
+            )
+          case 'molecular':
+            return (
+              <ErrorBoundary>
+                <MolecularBalanceDashboard userProfile={userProfile} />
+              </ErrorBoundary>
+            )
           default:
             return null
     }
@@ -256,7 +281,8 @@ function App() {
 
   return (
     <ThemeProvider>
-      <ToastProvider>
+      <AuthProvider>
+        <ToastProvider>
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 molecular-bg">
         {/* Error Toast */}
         <AnimatePresence>
@@ -396,7 +422,15 @@ function App() {
 
         {/* Performance Dashboard */}
         <PerformanceDashboard />
-      </ToastProvider>
+
+        {/* Auth Modal */}
+        <AuthModal 
+          isOpen={showAuthModal}
+          onClose={() => setShowAuthModal(false)}
+          defaultMode={authMode}
+        />
+        </ToastProvider>
+      </AuthProvider>
     </ThemeProvider>
   )
 }

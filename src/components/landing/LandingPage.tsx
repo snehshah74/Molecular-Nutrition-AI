@@ -4,6 +4,7 @@ import { useTheme } from '@/contexts/ThemeContext'
 
 interface LandingPageProps {
   onNavigate?: (page: string) => void
+  onAuthClick?: (mode: 'signin' | 'signup') => void
 }
 import { 
   Dna, 
@@ -26,7 +27,7 @@ import {
   Moon
 } from 'lucide-react'
 
-const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
+const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onAuthClick }) => {
   const { scrollYProgress } = useScroll()
   const y = useTransform(scrollYProgress, [0, 1], [0, -50])
   const { theme, toggleTheme } = useTheme()
@@ -202,6 +203,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 onClick={() => onNavigate?.('dashboard')}
               >
                 Get Started
+              </motion.button>
+              <motion.button 
+                className="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-6 py-2 rounded-lg hover:border-primary-600 hover:text-primary-600 transition-colors"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => onAuthClick?.('signin')}
+              >
+                Sign In
               </motion.button>
             </div>
             

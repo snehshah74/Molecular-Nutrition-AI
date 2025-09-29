@@ -94,6 +94,28 @@ export function Header({ onMenuToggle, isMenuOpen, userProfile, onNavigate, curr
               Progress
             </motion.button>
             <motion.button
+              onClick={() => onNavigate?.('molecular')}
+              className={cn(
+                "text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200",
+                currentPage === 'molecular' && "text-primary-600 dark:text-primary-400 font-semibold"
+              )}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Molecular
+            </motion.button>
+            <motion.button
+              onClick={() => onNavigate?.('biomarkers')}
+              className={cn(
+                "text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200",
+                currentPage === 'biomarkers' && "text-primary-600 dark:text-primary-400 font-semibold"
+              )}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Biomarkers
+            </motion.button>
+            <motion.button
               onClick={() => onNavigate?.('meal-planning')}
               className={cn(
                 "text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200",
