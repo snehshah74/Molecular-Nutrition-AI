@@ -180,8 +180,11 @@ export function WelcomePage({ onComplete }: WelcomePageProps) {
               Welcome to Molecular Nutrition AI
             </h1>
           </div>
+          <p className="text-gray-600 dark:text-gray-400 text-lg mb-4">
+            Great! Your account has been created successfully.
+          </p>
           <p className="text-gray-600 dark:text-gray-400 text-lg">
-            Let's create your personalized nutrition profile
+            Now let's create your personalized molecular nutrition profile
           </p>
         </motion.div>
 

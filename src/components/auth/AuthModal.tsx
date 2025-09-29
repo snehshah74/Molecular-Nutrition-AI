@@ -8,9 +8,10 @@ interface AuthModalProps {
   isOpen: boolean
   onClose: () => void
   defaultMode?: 'signin' | 'signup' | 'reset'
+  onAuthSuccess?: (mode: 'signin' | 'signup') => void
 }
 
-export function AuthModal({ isOpen, onClose, defaultMode = 'signin' }: AuthModalProps) {
+export function AuthModal({ isOpen, onClose, defaultMode = 'signin', onAuthSuccess }: AuthModalProps) {
   const [mode, setMode] = useState<'signin' | 'signup' | 'reset'>(defaultMode)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -33,7 +34,10 @@ export function AuthModal({ isOpen, onClose, defaultMode = 'signin' }: AuthModal
           setMessage({ type: 'error', text: error.message })
         } else {
           setMessage({ type: 'success', text: 'Signed in successfully!' })
-          setTimeout(onClose, 1000)
+          setTimeout(() => {
+            onClose()
+            onAuthSuccess?.('signin')
+          }, 1000)
         }
       } else if (mode === 'signup') {
         if (password !== confirmPassword) {
@@ -45,7 +49,11 @@ export function AuthModal({ isOpen, onClose, defaultMode = 'signin' }: AuthModal
         if (error) {
           setMessage({ type: 'error', text: error.message })
         } else {
-          setMessage({ type: 'success', text: 'Check your email for verification link!' })
+          setMessage({ type: 'success', text: 'Account created! Redirecting to setup...' })
+          setTimeout(() => {
+            onClose()
+            onAuthSuccess?.('signup')
+          }, 1500)
         }
       } else if (mode === 'reset') {
         const { error } = await resetPassword(email)

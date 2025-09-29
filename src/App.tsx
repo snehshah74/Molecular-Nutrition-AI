@@ -2,7 +2,7 @@ import { useState, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { ToastProvider } from '@/contexts/ToastContext'
-import { AuthProvider } from '@/contexts/AuthContext'
+import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 import { useAppState } from '@/hooks/useAppState'
 import type { UserProfile } from '@/types'
 import { Header } from '@/components/layout/Header'
@@ -32,11 +32,12 @@ import { generateId } from '@/lib/utils'
 
 type Page = 'landing' | 'welcome' | 'dashboard' | 'food-log' | 'nutrients' | 'ai-insights' | 'progress' | 'profile' | 'settings' | 'meal-planning' | 'education' | 'supplements' | 'analytics' | 'community' | 'biomarkers' | 'molecular'
 
-function App() {
+function AppContent() {
   const [currentPage, setCurrentPage] = useState<Page>('landing')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authMode, setAuthMode] = useState<'signin' | 'signup' | 'reset'>('signin')
+  const { user } = useAuth()
   
   const {
     userProfile,
@@ -111,9 +112,10 @@ function App() {
       case 'landing':
         return <LandingPage 
           onNavigate={(page) => {
-            if (page === 'dashboard' && !userProfile) {
-              // If user clicks "Get Started" but has no profile, show welcome page
-              setCurrentPage('welcome' as Page)
+            if (page === 'dashboard') {
+              // If user clicks "Get Started", show authentication first
+              setAuthMode('signup')
+              setShowAuthModal(true)
             } else {
               setCurrentPage(page as Page)
             }
@@ -280,10 +282,7 @@ function App() {
   }, [userProfile, currentPage, dailyIntake, recommendations, handleProfileComplete, addMeal, updateMeal, deleteMeal, updateRecommendations, progressData])
 
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <ToastProvider>
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 molecular-bg">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 molecular-bg">
         {/* Error Toast */}
         <AnimatePresence>
           {error && (
@@ -428,7 +427,30 @@ function App() {
           isOpen={showAuthModal}
           onClose={() => setShowAuthModal(false)}
           defaultMode={authMode}
+          onAuthSuccess={(authMode) => {
+            if (authMode === 'signup') {
+              // Redirect to welcome page after successful signup
+              setCurrentPage('welcome')
+            } else if (authMode === 'signin') {
+              // For signin, check if user has a profile
+              if (userProfile) {
+                setCurrentPage('dashboard')
+              } else {
+                setCurrentPage('welcome')
+              }
+            }
+          }}
         />
+    </div>
+  )
+}
+
+function App() {
+  return (
+    <ThemeProvider>
+      <AuthProvider>
+        <ToastProvider>
+          <AppContent />
         </ToastProvider>
       </AuthProvider>
     </ThemeProvider>

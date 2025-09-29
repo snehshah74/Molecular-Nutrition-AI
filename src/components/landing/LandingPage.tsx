@@ -320,7 +320,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onAuthClick }) =>
                   onClick={() => onNavigate?.('dashboard')}
                 >
                   <span className="relative z-10 flex items-center">
-                    Start Your Journey
+                    Get Started Free
                     <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform duration-300" />
                   </span>
                   <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
