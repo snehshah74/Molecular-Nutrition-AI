@@ -269,9 +269,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
               >
-                Optimize Your
+                Welcome to
                 <span className="bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent"> Molecular</span>
-                <br />Nutrition
+                <br />Nutrition AI
               </motion.h1>
               
               <motion.p 
@@ -280,8 +280,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
               >
-                Harness the power of AI and molecular science to achieve optimal health. 
-                Get personalized nutrition recommendations based on your unique genetic profile and lifestyle.
+                The future of personalized nutrition is here. Our AI-powered platform analyzes your molecular profile 
+                to deliver precise nutrition recommendations that optimize your health and performance.
               </motion.p>
               
               <motion.div 
@@ -296,7 +296,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   whileTap={{ scale: 0.95 }}
                   onClick={() => onNavigate?.('dashboard')}
                 >
-                  Start Free Trial
+                  Get Started
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </motion.button>
                 
@@ -631,7 +631,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   whileTap={{ scale: 0.95 }}
                   onClick={() => onNavigate?.('dashboard')}
                 >
-                  Start Your Free Trial
+                  Get Started Now
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </motion.button>
           </motion.div>

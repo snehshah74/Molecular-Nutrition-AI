@@ -8,6 +8,7 @@ import { Header } from '@/components/layout/Header'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { Footer } from '@/components/layout/Footer'
 import { UserProfileSetup } from '@/components/profiles/UserProfileSetup'
+import { WelcomePage } from '@/components/welcome/WelcomePage'
 import { FoodLogger } from '@/components/logging/FoodLogger'
 import { ModernNutrientDashboard } from '@/components/dashboard/ModernNutrientDashboard'
 import { AIRecommendations } from '@/components/ai/AIRecommendations'
@@ -25,7 +26,7 @@ import { AlertCircle, X } from 'lucide-react'
 import type { UserProfileFormData } from '@/types'
 import { generateId } from '@/lib/utils'
 
-type Page = 'landing' | 'dashboard' | 'food-log' | 'nutrients' | 'ai-insights' | 'progress' | 'profile' | 'settings' | 'meal-planning' | 'education' | 'supplements' | 'analytics' | 'community'
+type Page = 'landing' | 'welcome' | 'dashboard' | 'food-log' | 'nutrients' | 'ai-insights' | 'progress' | 'profile' | 'settings' | 'meal-planning' | 'education' | 'supplements' | 'analytics' | 'community'
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('landing')
@@ -104,12 +105,14 @@ function App() {
       case 'landing':
         return <LandingPage onNavigate={(page) => {
           if (page === 'dashboard' && !userProfile) {
-            // If user clicks "Get Started" but has no profile, show profile setup
-            setCurrentPage('profile' as Page)
+            // If user clicks "Get Started" but has no profile, show welcome page
+            setCurrentPage('welcome' as Page)
           } else {
             setCurrentPage(page as Page)
           }
         }} />
+      case 'welcome':
+        return <WelcomePage onComplete={handleProfileComplete} />
       default:
         if (!userProfile) {
           return <UserProfileSetup onComplete={handleProfileComplete} />
@@ -312,7 +315,7 @@ function App() {
         </AnimatePresence>
 
         {/* Header */}
-        {currentPage !== 'landing' && (
+        {currentPage !== 'landing' && currentPage !== 'welcome' && (
           <Header 
             onMenuToggle={() => setIsMenuOpen(!isMenuOpen)} 
             isMenuOpen={isMenuOpen}
@@ -325,7 +328,7 @@ function App() {
           />
         )}
 
-        {currentPage !== 'landing' && (
+        {currentPage !== 'landing' && currentPage !== 'welcome' && (
           <div className="flex">
             {/* Sidebar */}
             <Sidebar
@@ -368,8 +371,20 @@ function App() {
           </motion.div>
         )}
 
+        {/* Welcome Page Content */}
+        {currentPage === 'welcome' && (
+          <motion.div
+            key={currentPage}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+          >
+            {renderPage}
+          </motion.div>
+        )}
+
         {/* Footer */}
-        <Footer />
+        {currentPage !== 'landing' && currentPage !== 'welcome' && <Footer />}
         </div>
 
         {/* Debug Panel */}
