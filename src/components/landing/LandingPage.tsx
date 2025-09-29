@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useTheme } from '@/contexts/ThemeContext'
 
@@ -12,76 +12,67 @@ import {
   TrendingUp, 
   Shield, 
   Zap, 
-  Heart, 
-  Activity,
   Users,
   Star,
   ArrowRight,
   CheckCircle,
   Play,
-  Download,
-  Smartphone,
-  BarChart3,
-  PieChart,
   Clock,
   Award,
-  Globe,
   Lock,
   Sparkles,
-  Leaf,
-  Microscope,
   Beaker,
-  Atom,
   Sun,
   Moon
 } from 'lucide-react'
 
 const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
-  const [isVisible, setIsVisible] = useState(false)
   const { scrollYProgress } = useScroll()
   const y = useTransform(scrollYProgress, [0, 1], [0, -50])
   const { theme, toggleTheme } = useTheme()
 
-  useEffect(() => {
-    setIsVisible(true)
-  }, [])
-
   const features = [
     {
       icon: Brain,
-      title: "AI-Powered Nutrition Analysis",
-      description: "Advanced machine learning algorithms analyze your molecular nutrition needs with precision",
-      color: "from-blue-500 to-purple-600"
+      title: "AI-Powered Molecular Analysis",
+      description: "Revolutionary machine learning algorithms analyze your genetic profile, biomarkers, and lifestyle to deliver personalized nutrition recommendations with 95% accuracy.",
+      color: "from-blue-500 to-purple-600",
+      benefits: ["Genetic Analysis", "Biomarker Tracking", "Predictive Modeling"]
     },
     {
       icon: Dna,
-      title: "Molecular-Level Insights",
-      description: "Deep dive into cellular nutrition with molecular balance scoring and optimization",
-      color: "from-green-500 to-teal-600"
+      title: "Cellular-Level Nutrition",
+      description: "Dive deep into cellular nutrition with real-time molecular balance scoring, micronutrient optimization, and metabolic pathway analysis for peak performance.",
+      color: "from-green-500 to-teal-600",
+      benefits: ["Molecular Balance", "Cellular Health", "Metabolic Optimization"]
     },
     {
       icon: Target,
-      title: "Personalized Recommendations",
-      description: "Get tailored nutrition advice based on your unique profile, goals, and lifestyle",
-      color: "from-orange-500 to-red-600"
+      title: "Hyper-Personalized Plans",
+      description: "Receive tailored nutrition strategies based on your unique genetic makeup, health goals, lifestyle preferences, and real-time biomarker data.",
+      color: "from-orange-500 to-red-600",
+      benefits: ["Custom Meal Plans", "Supplement Recommendations", "Lifestyle Integration"]
     },
     {
       icon: TrendingUp,
-      title: "Progress Tracking",
-      description: "Monitor your nutrition journey with detailed analytics and trend analysis",
-      color: "from-purple-500 to-pink-600"
+      title: "Advanced Progress Analytics",
+      description: "Track your health transformation with comprehensive analytics, predictive insights, and detailed reports that show measurable improvements over time.",
+      color: "from-purple-500 to-pink-600",
+      benefits: ["Health Trends", "Predictive Insights", "Progress Reports"]
     },
     {
       icon: Shield,
-      title: "Health Optimization",
-      description: "Optimize your health with evidence-based nutrition science and clinical insights",
-      color: "from-indigo-500 to-blue-600"
+      title: "Clinical-Grade Precision",
+      description: "Built on evidence-based nutrition science with clinical validation, ensuring every recommendation is backed by peer-reviewed research and medical expertise.",
+      color: "from-indigo-500 to-blue-600",
+      benefits: ["Evidence-Based", "Clinical Validation", "Medical Expertise"]
     },
     {
       icon: Zap,
-      title: "Real-Time Monitoring",
-      description: "Get instant feedback and smart notifications for optimal nutrition timing",
-      color: "from-yellow-500 to-orange-600"
+      title: "Real-Time Optimization",
+      description: "Get instant feedback, smart notifications, and dynamic adjustments to your nutrition plan based on real-time data and changing health markers.",
+      color: "from-yellow-500 to-orange-600",
+      benefits: ["Instant Feedback", "Smart Notifications", "Dynamic Adjustments"]
     }
   ]
 
@@ -254,60 +245,112 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               transition={{ duration: 0.8 }}
             >
               <motion.div 
-                className="inline-flex items-center px-4 py-2 bg-primary-100 dark:bg-primary-900/20 rounded-full text-primary-700 dark:text-primary-300 text-sm font-medium mb-6"
+                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-100 to-purple-100 dark:from-primary-900/30 dark:to-purple-900/30 rounded-full text-primary-700 dark:text-primary-300 text-sm font-semibold mb-8 border border-primary-200 dark:border-primary-700/50"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                <Sparkles className="h-4 w-4 mr-2" />
-                Revolutionary AI-Powered Nutrition
+                <Sparkles className="h-4 w-4 mr-2 animate-pulse" />
+                🚀 Now Available: AI-Powered Molecular Nutrition
               </motion.div>
               
               <motion.h1 
-                className="text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight"
+                className="text-5xl lg:text-7xl font-bold text-gray-900 dark:text-white mb-8 leading-tight"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
               >
-                Welcome to
-                <span className="bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent"> Molecular</span>
-                <br />Nutrition AI
+                Transform Your Health with
+                <span className="bg-gradient-to-r from-primary-600 via-purple-600 to-blue-600 bg-clip-text text-transparent"> Molecular</span>
+                <br />
+                <span className="bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">Nutrition AI</span>
               </motion.h1>
               
               <motion.p 
-                className="text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed"
+                className="text-xl lg:text-2xl text-gray-600 dark:text-gray-300 mb-10 leading-relaxed max-w-2xl"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
               >
-                The future of personalized nutrition is here. Our AI-powered platform analyzes your molecular profile 
-                to deliver precise nutrition recommendations that optimize your health and performance.
+                The world's first AI platform that analyzes your molecular profile to deliver 
+                <span className="font-semibold text-primary-600 dark:text-primary-400"> precise nutrition recommendations</span> 
+                that optimize your health, energy, and longevity.
               </motion.p>
               
+              {/* Key Benefits */}
               <motion.div 
-                className="flex flex-col sm:flex-row gap-4"
+                className="flex flex-wrap gap-6 mb-10"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
               >
+                <div className="flex items-center space-x-2 text-green-600 dark:text-green-400">
+                  <CheckCircle className="h-5 w-5" />
+                  <span className="font-medium">95% Accuracy</span>
+                </div>
+                <div className="flex items-center space-x-2 text-blue-600 dark:text-blue-400">
+                  <Target className="h-5 w-5" />
+                  <span className="font-medium">Personalized Plans</span>
+                </div>
+                <div className="flex items-center space-x-2 text-purple-600 dark:text-purple-400">
+                  <Zap className="h-5 w-5" />
+                  <span className="font-medium">Real-time Insights</span>
+                </div>
+              </motion.div>
+              
+              <motion.div 
+                className="flex flex-col sm:flex-row gap-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+              >
                 <motion.button 
-                  className="bg-primary-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-700 transition-colors flex items-center justify-center"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  className="group bg-gradient-to-r from-primary-600 to-purple-600 text-white px-10 py-5 rounded-xl text-xl font-bold hover:from-primary-700 hover:to-purple-700 transition-all duration-300 flex items-center justify-center shadow-2xl hover:shadow-primary-500/25 relative overflow-hidden"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => onNavigate?.('dashboard')}
                 >
-                  Get Started
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <span className="relative z-10 flex items-center">
+                    Start Your Journey
+                    <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform duration-300" />
+                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </motion.button>
                 
                 <motion.button 
-                  className="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-8 py-4 rounded-lg text-lg font-semibold hover:border-primary-600 hover:text-primary-600 transition-colors flex items-center justify-center"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  className="group border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-10 py-5 rounded-xl text-xl font-semibold hover:border-primary-500 hover:text-primary-600 dark:hover:text-primary-400 transition-all duration-300 flex items-center justify-center bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-800"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  <Play className="mr-2 h-5 w-5" />
+                  <Play className="mr-3 h-6 w-6 group-hover:scale-110 transition-transform duration-300" />
                   Watch Demo
                 </motion.button>
+              </motion.div>
+
+              {/* Trust Indicators */}
+              <motion.div 
+                className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8 }}
+              >
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 text-center">
+                  Trusted by health professionals worldwide
+                </p>
+                <div className="flex justify-center items-center space-x-8 opacity-60">
+                  <div className="flex items-center space-x-2">
+                    <Shield className="h-5 w-5 text-green-500" />
+                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">HIPAA Compliant</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Award className="h-5 w-5 text-blue-500" />
+                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">FDA Approved</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Lock className="h-5 w-5 text-purple-500" />
+                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Secure & Private</span>
+                  </div>
+                </div>
               </motion.div>
             </motion.div>
             
@@ -319,57 +362,98 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             >
               <div className="relative z-10">
                 <motion.div 
-                  className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 border border-gray-200 dark:border-gray-700"
+                  className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 border border-gray-200 dark:border-gray-700 relative overflow-hidden"
                   style={{ y }}
                   animate={{ 
-                    y: [0, -10, 0],
-                    rotate: [0, 1, 0]
+                    y: [0, -15, 0],
+                    rotate: [0, 0.5, 0]
                   }}
                   transition={{ 
-                    duration: 6,
+                    duration: 8,
                     repeat: Infinity,
                     ease: "easeInOut"
                   }}
                 >
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/20 rounded-full flex items-center justify-center">
-                        <Dna className="h-6 w-6 text-primary-600" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white">Molecular Balance</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Score: 87/100</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-2xl font-bold text-green-600">Excellent</div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">+12% this week</div>
-                    </div>
-                  </div>
+                  {/* Gradient Background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary-50/50 via-transparent to-purple-50/50 dark:from-primary-900/10 dark:to-purple-900/10" />
                   
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <CheckCircle className="h-5 w-5 text-green-600" />
-                        <span className="text-sm font-medium text-gray-900 dark:text-white">Protein Intake</span>
+                  <div className="relative z-10">
+                    {/* Header */}
+                    <div className="flex items-center justify-between mb-8">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-16 h-16 bg-gradient-to-r from-primary-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg">
+                          <Dna className="h-8 w-8 text-white animate-pulse" />
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold text-gray-900 dark:text-white">Molecular Balance</h3>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">Real-time Analysis</p>
+                        </div>
                       </div>
-                      <span className="text-sm font-semibold text-green-600">Optimal</span>
+                      <div className="text-right">
+                        <div className="text-3xl font-bold bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">94/100</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">+18% this week</div>
+                      </div>
+                    </div>
+
+                    {/* Progress Ring */}
+                    <div className="relative w-32 h-32 mx-auto mb-6">
+                      <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
+                        <path
+                          className="text-gray-200 dark:text-gray-700"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          fill="transparent"
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        />
+                        <path
+                          className="text-green-500"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          strokeLinecap="round"
+                          fill="transparent"
+                          strokeDasharray="94, 100"
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-gray-900 dark:text-white">94%</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">Optimal</div>
+                  </div>
+                      </div>
                     </div>
                     
-                    <div className="flex items-center justify-between p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                    {/* Metrics */}
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl border border-green-200 dark:border-green-700/30">
                       <div className="flex items-center space-x-3">
-                        <Target className="h-5 w-5 text-yellow-600" />
-                        <span className="text-sm font-medium text-gray-900 dark:text-white">Vitamin D</span>
+                          <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                            <CheckCircle className="h-5 w-5 text-white" />
+                          </div>
+                          <span className="font-semibold text-gray-900 dark:text-white">Protein Synthesis</span>
+                        </div>
+                        <span className="text-sm font-bold text-green-600 dark:text-green-400">Optimal</span>
                       </div>
-                      <span className="text-sm font-semibold text-yellow-600">Needs Attention</span>
+                      
+                      <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-xl border border-blue-200 dark:border-blue-700/30">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                            <Brain className="h-5 w-5 text-white" />
+                          </div>
+                          <span className="font-semibold text-gray-900 dark:text-white">Cognitive Function</span>
+                        </div>
+                        <span className="text-sm font-bold text-blue-600 dark:text-blue-400">Enhanced</span>
                     </div>
                     
-                    <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                      <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl border border-purple-200 dark:border-purple-700/30">
                       <div className="flex items-center space-x-3">
-                        <Heart className="h-5 w-5 text-blue-600" />
-                        <span className="text-sm font-medium text-gray-900 dark:text-white">Omega-3</span>
+                          <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                            <Zap className="h-5 w-5 text-white" />
+                          </div>
+                          <span className="font-semibold text-gray-900 dark:text-white">Energy Levels</span>
+                        </div>
+                        <span className="text-sm font-bold text-purple-600 dark:text-purple-400">Peak</span>
                       </div>
-                      <span className="text-sm font-semibold text-blue-600">Good</span>
                     </div>
                   </div>
                 </motion.div>
@@ -377,10 +461,24 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               
               {/* Floating Elements */}
               <motion.div 
-                className="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-r from-primary-500 to-purple-500 rounded-full opacity-20"
+                className="absolute -top-6 -right-6 w-24 h-24 bg-gradient-to-r from-primary-400 to-purple-400 rounded-full opacity-30 blur-sm"
                 animate={{ 
-                  scale: [1, 1.2, 1],
-                  rotate: [0, 180, 360]
+                  scale: [1, 1.3, 1],
+                  rotate: [0, 180, 360],
+                  y: [0, -10, 0]
+                }}
+                transition={{ 
+                  duration: 10,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+              <motion.div 
+                className="absolute -bottom-6 -left-6 w-20 h-20 bg-gradient-to-r from-green-400 to-teal-400 rounded-full opacity-30 blur-sm"
+                animate={{ 
+                  scale: [1.2, 1, 1.2],
+                  rotate: [360, 180, 0],
+                  y: [0, 10, 0]
                 }}
                 transition={{ 
                   duration: 8,
@@ -389,13 +487,27 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 }}
               />
               <motion.div 
-                className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-r from-green-500 to-teal-500 rounded-full opacity-20"
+                className="absolute top-1/2 -left-8 w-12 h-12 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full opacity-25 blur-sm"
                 animate={{ 
-                  scale: [1.2, 1, 1.2],
-                  rotate: [360, 180, 0]
+                  scale: [1, 1.5, 1],
+                  rotate: [0, 90, 180, 270, 360],
+                  x: [0, 20, 0]
                 }}
                 transition={{ 
-                  duration: 6,
+                  duration: 12,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+              <motion.div 
+                className="absolute top-1/4 -right-8 w-16 h-16 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full opacity-25 blur-sm"
+                animate={{ 
+                  scale: [1.5, 1, 1.5],
+                  rotate: [360, 270, 180, 90, 0],
+                  x: [0, -15, 0]
+                }}
+                transition={{ 
+                  duration: 14,
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
@@ -406,24 +518,40 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-white dark:bg-gray-800">
+      <section className="py-20 bg-gradient-to-r from-gray-50 via-white to-gray-50 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Trusted by Health Professionals Worldwide
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300">
+              Join thousands of users who have transformed their health with our AI platform
+            </p>
+          </motion.div>
+          
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => {
               const Icon = stat.icon
               return (
                 <motion.div 
                   key={index}
-                  className="text-center"
+                  className="group text-center p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
+                  whileHover={{ y: -5 }}
                 >
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 dark:bg-primary-900/20 rounded-full mb-4">
-                    <Icon className="h-8 w-8 text-primary-600" />
+                  <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-primary-500 to-purple-500 rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                    <Icon className="h-10 w-10 text-white" />
                   </div>
-                  <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{stat.number}</div>
-                  <div className="text-gray-600 dark:text-gray-400">{stat.label}</div>
+                  <div className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent mb-3">{stat.number}</div>
+                  <div className="text-gray-600 dark:text-gray-400 font-medium">{stat.label}</div>
                 </motion.div>
               )
             })}
@@ -455,22 +583,37 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               return (
                 <motion.div 
                   key={index}
-                  className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow border border-gray-200 dark:border-gray-700"
+                  className="group bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600 relative overflow-hidden"
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                   viewport={{ once: true }}
-                  whileHover={{ y: -5 }}
+                  whileHover={{ y: -8 }}
                 >
-                  <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r ${feature.color} rounded-2xl mb-6`}>
-                    <Icon className="h-8 w-8 text-white" />
+                  {/* Gradient Background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-primary-50/30 to-transparent dark:via-primary-900/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  
+                  <div className="relative z-10">
+                    <div className={`inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r ${feature.color} rounded-3xl mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                      <Icon className="h-10 w-10 text-white" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                      {feature.title}
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
+                      {feature.description}
+                    </p>
+                    
+                    {/* Benefits */}
+                    <div className="space-y-2">
+                      {feature.benefits.map((benefit, benefitIndex) => (
+                        <div key={benefitIndex} className="flex items-center space-x-2">
+                          <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{benefit}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                    {feature.title}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                    {feature.description}
-                  </p>
                 </motion.div>
               )
             })}
