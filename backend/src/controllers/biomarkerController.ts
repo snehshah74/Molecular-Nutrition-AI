@@ -6,6 +6,9 @@ import { createError } from '../middleware/errorHandler.js'
 export async function getBiomarkers(req: AuthRequest, res: Response) {
   try {
     const userId = req.user?.id
+    if (!userId) {
+      throw createError('User not authenticated', 401)
+    }
 
     const { data, error } = await supabase
       .from('biomarkers')
@@ -18,15 +21,18 @@ export async function getBiomarkers(req: AuthRequest, res: Response) {
     }
 
     res.json({ biomarkers: data })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Get biomarkers error:', error)
-    res.status(500).json({ error: 'Failed to fetch biomarkers' })
+    res.status(error.status || 500).json({ error: error.message || 'Failed to fetch biomarkers' })
   }
 }
 
 export async function getBiomarkerByDate(req: AuthRequest, res: Response) {
   try {
     const userId = req.user?.id
+    if (!userId) {
+      throw createError('User not authenticated', 401)
+    }
     const { date } = req.params
 
     const { data, error } = await supabase
@@ -41,15 +47,18 @@ export async function getBiomarkerByDate(req: AuthRequest, res: Response) {
     }
 
     res.json({ biomarker: data || null })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Get biomarker error:', error)
-    res.status(500).json({ error: 'Failed to fetch biomarker' })
+    res.status(error.status || 500).json({ error: error.message || 'Failed to fetch biomarker' })
   }
 }
 
 export async function upsertBiomarker(req: AuthRequest, res: Response) {
   try {
     const userId = req.user?.id
+    if (!userId) {
+      throw createError('User not authenticated', 401)
+    }
     const biomarkerData = req.body
 
     const { data, error } = await supabase
@@ -66,15 +75,18 @@ export async function upsertBiomarker(req: AuthRequest, res: Response) {
     }
 
     res.json({ biomarker: data })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Upsert biomarker error:', error)
-    res.status(500).json({ error: 'Failed to save biomarker' })
+    res.status(error.status || 500).json({ error: error.message || 'Failed to save biomarker' })
   }
 }
 
 export async function deleteBiomarker(req: AuthRequest, res: Response) {
   try {
     const userId = req.user?.id
+    if (!userId) {
+      throw createError('User not authenticated', 401)
+    }
     const { id } = req.params
 
     const { error } = await supabase
@@ -88,9 +100,9 @@ export async function deleteBiomarker(req: AuthRequest, res: Response) {
     }
 
     res.json({ message: 'Biomarker deleted successfully' })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Delete biomarker error:', error)
-    res.status(500).json({ error: 'Failed to delete biomarker' })
+    res.status(error.status || 500).json({ error: error.message || 'Failed to delete biomarker' })
   }
 }
 

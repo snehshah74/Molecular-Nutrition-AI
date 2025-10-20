@@ -5,15 +5,15 @@ A full-stack nutrition tracking application with AI-powered recommendations, bui
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+
+- Node.js 18+ 
 - Supabase account
 - OpenRouter API key (for AI features)
 
 ### Installation
 
 1. **Clone and install dependencies**
-```bash
-git clone <repository-url>
+   ```bash
+   git clone <repository-url>
 cd Molecular-Nutrition-AI-2.0
 npm run install:all
 ```
@@ -35,16 +35,16 @@ FRONTEND_URL=http://localhost:5173
 ```
 
 **Frontend** (`frontend/.env`):
-```env
+   ```env
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key
 VITE_API_URL=http://localhost:3001/api
 ```
 
 4. **Start development servers**
-```bash
-npm run dev
-```
+   ```bash
+   npm run dev
+   ```
 
 - Frontend: http://localhost:5173
 - Backend: http://localhost:3001

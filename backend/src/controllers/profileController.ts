@@ -6,6 +6,9 @@ import { createError } from '../middleware/errorHandler.js'
 export async function getProfile(req: AuthRequest, res: Response) {
   try {
     const userId = req.user?.id
+    if (!userId) {
+      throw createError('User not authenticated', 401)
+    }
 
     const { data, error } = await supabase
       .from('profiles')
@@ -18,15 +21,18 @@ export async function getProfile(req: AuthRequest, res: Response) {
     }
 
     res.json({ profile: data || null })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Get profile error:', error)
-    res.status(500).json({ error: 'Failed to fetch profile' })
+    res.status(error.status || 500).json({ error: error.message || 'Failed to fetch profile' })
   }
 }
 
 export async function upsertProfile(req: AuthRequest, res: Response) {
   try {
     const userId = req.user?.id
+    if (!userId) {
+      throw createError('User not authenticated', 401)
+    }
     const profileData = req.body
 
     const { data, error } = await supabase
@@ -44,15 +50,18 @@ export async function upsertProfile(req: AuthRequest, res: Response) {
     }
 
     res.json({ profile: data })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Upsert profile error:', error)
-    res.status(500).json({ error: 'Failed to save profile' })
+    res.status(error.status || 500).json({ error: error.message || 'Failed to save profile' })
   }
 }
 
 export async function updateProfile(req: AuthRequest, res: Response) {
   try {
     const userId = req.user?.id
+    if (!userId) {
+      throw createError('User not authenticated', 401)
+    }
     const updates = req.body
 
     const { data, error } = await supabase
@@ -70,9 +79,9 @@ export async function updateProfile(req: AuthRequest, res: Response) {
     }
 
     res.json({ profile: data })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Update profile error:', error)
-    res.status(500).json({ error: 'Failed to update profile' })
+    res.status(error.status || 500).json({ error: error.message || 'Failed to update profile' })
   }
 }
 
