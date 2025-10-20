@@ -309,8 +309,8 @@ export function useAppState() {
       
       // Calculate molecular balance score using user targets
       const userTargets = {
-        macronutrients: NutrientTargets.getMacronutrientTargets(userProfile),
-        micronutrients: NutrientTargets.getMicronutrientTargets(userProfile)
+        macronutrients: NutrientTargets.getMacronutrientTargets(userProfile!),
+        micronutrients: NutrientTargets.getMicronutrientTargets(userProfile!)
       }
       
       const molecularBalanceScore = NutrientCalculations.calculateMolecularBalanceScore(
@@ -348,8 +348,8 @@ export function useAppState() {
       
       // Calculate molecular balance score using user targets
       const userTargets = {
-        macronutrients: NutrientTargets.getMacronutrientTargets(userProfile),
-        micronutrients: NutrientTargets.getMicronutrientTargets(userProfile)
+        macronutrients: NutrientTargets.getMacronutrientTargets(userProfile!),
+        micronutrients: NutrientTargets.getMicronutrientTargets(userProfile!)
       }
       
       const molecularBalanceScore = NutrientCalculations.calculateMolecularBalanceScore(
@@ -384,8 +384,8 @@ export function useAppState() {
       
       // Calculate molecular balance score using user targets
       const userTargets = {
-        macronutrients: NutrientTargets.getMacronutrientTargets(userProfile),
-        micronutrients: NutrientTargets.getMicronutrientTargets(userProfile)
+        macronutrients: NutrientTargets.getMacronutrientTargets(userProfile!),
+        micronutrients: NutrientTargets.getMicronutrientTargets(userProfile!)
       }
       
       const molecularBalanceScore = NutrientCalculations.calculateMolecularBalanceScore(

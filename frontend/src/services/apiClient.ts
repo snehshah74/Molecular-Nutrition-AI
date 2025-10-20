@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { supabase } from '../lib/supabase'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+const API_URL = (import.meta.env.VITE_API_URL as string) || 'http://localhost:3001/api'
 
 // Create axios instance
 const apiClient = axios.create({
