@@ -1,0 +1,55 @@
+# Render.com Blueprint Configuration
+# This file defines multiple services for the Molecular Nutrition AI application
+
+services:
+  # Backend API Service
+  - type: web
+    name: molecular-nutrition-api
+    env: node
+    plan: free
+    buildCommand: cd backend && npm install && npm run build
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: AI_INTEGRATIONS_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+
+  # AI Integrations Service
+  - type: web
+    name: ai-integrations
+    env: python
+    plan: free
+    buildCommand: cd ai-integrations && pip install -r requirements.txt && python train_molecular_models.py
+    startCommand: cd ai-integrations && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
+      - key: NODE_ENV
+        value: production
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: BACKEND_URL
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false

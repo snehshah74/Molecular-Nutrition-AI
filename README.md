@@ -1,108 +1,90 @@
 # 🧬 Molecular Nutrition AI
 
-A full-stack nutrition tracking application with AI-powered recommendations, built with React, Node.js, and Supabase.
+Production-ready healthcare-focused nutrition tracking application with AI-powered molecular health analysis.
 
-## 🚀 Quick Start
+## 🚀 Quick Deploy
 
-### Prerequisites
-- Node.js 18+ 
-- Supabase account
-- OpenRouter API key (for AI features)
+### **One-Click Deployment**
+This repository includes a `render.yaml` blueprint for automatic deployment to Render.com:
 
-### Installation
-
-1. **Clone and install dependencies**
-   ```bash
-   git clone <repository-url>
-cd Molecular-Nutrition-AI-2.0
-npm run install:all
-```
-
-2. **Set up Supabase**
-   - Create project at [supabase.com](https://supabase.com)
-   - Run database migration from `database/migrations/001_initial_schema.sql`
-   - Get API keys from Settings → API
-
-3. **Configure environment**
-
-**Backend** (`backend/.env`):
-```env
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-OPENROUTER_API_KEY=your-openrouter-key
-FRONTEND_URL=http://localhost:5173
-```
-
-**Frontend** (`frontend/.env`):
-   ```env
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key
-VITE_API_URL=http://localhost:3001/api
-```
-
-4. **Start development servers**
-   ```bash
-   npm run dev
-   ```
-
-- Frontend: http://localhost:5173
-- Backend: http://localhost:3001
+1. **Connect to Render:** Go to [render.com](https://render.com) and connect this GitHub repository
+2. **Deploy Blueprint:** Render will automatically detect the `render.yaml` and deploy both services
+3. **Configure Environment Variables:** Add your Supabase and API keys in the Render dashboard
+4. **Deploy Frontend:** Deploy the `frontend/` folder to Vercel
 
 ## 🏗️ Architecture
 
 ```
-├── backend/          # Node.js + Express API
-├── frontend/         # React + Vite SPA
-├── database/         # Supabase migrations
-└── docker-compose.yml # Production deployment
+Molecular-Nutrition-AI/
+├── backend/                 # Node.js API (→ Render)
+├── frontend/               # React App (→ Vercel)  
+├── ai-integrations/         # Python AI Service (→ Render)
+└── render.yaml             # Render Blueprint
 ```
 
-## 🔐 Authentication
+## 🧠 AI Features
 
-- Email confirmation required
-- Google OAuth integration
-- Phone authentication (SMS)
-- Secure JWT tokens
+### **Molecular Health Analysis**
+- **46 molecular nutrients** tracked across 6 categories
+- **32 molecular biomarkers** predicted using ML models
+- **5 molecular health conditions** assessed
+- **Advanced AI models** trained on molecular health data
 
-## 🚢 Production Deployment
+### **Healthcare-Grade Models**
+- **Nutrition Analysis:** Molecular balance scoring, deficiency risk identification
+- **Biomarker Prediction:** Future health trends, risk factor analysis
+- **Health Risk Assessment:** Comprehensive risk scoring, prevention recommendations
 
-### Recommended: Platform Deployment
-- **Backend**: Deploy `backend/` folder to [Render.com](https://render.com)
-- **Frontend**: Deploy `frontend/` folder to [Vercel.com](https://vercel.com)
-- **Database**: [Supabase](https://supabase.com) (managed)
+## 🔧 Environment Variables
 
-### Quick Deploy
-1. Push code to GitHub
-2. Connect GitHub to Render (backend)
-3. Connect GitHub to Vercel (frontend)
-4. Set up Supabase database
-5. Add environment variables
-6. Deploy!
+### **Backend Service**
+```
+NODE_ENV=production
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+OPENROUTER_API_KEY=your-openrouter-key
+FRONTEND_URL=https://your-app.vercel.app
+AI_INTEGRATIONS_URL=https://ai-integrations.onrender.com
+JWT_SECRET=your-jwt-secret
+```
 
-See `DEPLOYMENT_GUIDE.md` for detailed instructions.
+### **AI Integrations Service**
+```
+PYTHON_VERSION=3.11
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+FRONTEND_URL=https://your-app.vercel.app
+BACKEND_URL=https://molecular-nutrition-api.onrender.com
+OPENROUTER_API_KEY=your-openrouter-key
+```
 
-## 📊 Features
+### **Frontend Service**
+```
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+VITE_API_URL=https://molecular-nutrition-api.onrender.com/api
+VITE_AI_INTEGRATIONS_URL=https://ai-integrations.onrender.com
+VITE_SITE_URL=https://your-app.vercel.app
+```
 
-- User profiles and health tracking
-- Meal logging with nutrition analysis
-- AI-powered recommendations
-- Biomarker tracking
-- Progress analytics
-- Responsive design
+## 🚀 Deployment Steps
 
-## 🛠️ Tech Stack
+1. **Supabase Setup:** Create project and run database migrations
+2. **Render Deployment:** Connect GitHub repo and deploy blueprint
+3. **Vercel Deployment:** Deploy frontend folder
+4. **Environment Configuration:** Add all required environment variables
+5. **Test Production:** Verify all services are communicating
 
-**Frontend**: React 18, TypeScript, Tailwind CSS, Framer Motion, Recharts
-**Backend**: Node.js, Express, TypeScript, Supabase
-**Database**: PostgreSQL (via Supabase)
-**AI**: OpenRouter (GPT-4o)
-**Deployment**: Render, Vercel, Supabase
+## 📊 Production URLs
 
-## 📄 License
-
-MIT License - see LICENSE file for details.
+After deployment, you'll have:
+- **Frontend:** `https://your-app.vercel.app`
+- **Backend:** `https://molecular-nutrition-api.onrender.com`
+- **AI Service:** `https://ai-integrations.onrender.com`
+- **Database:** Supabase (PostgreSQL + Auth)
 
 ---
 
-**Built for better health through molecular nutrition** 🧬
+**Production-ready molecular health AI platform** 🏥🧬
