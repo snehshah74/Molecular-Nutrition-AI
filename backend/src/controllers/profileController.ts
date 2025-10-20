@@ -66,8 +66,9 @@ export async function updateProfile(req: AuthRequest, res: Response) {
 
     const { data, error } = await supabase
       .from('profiles')
+      // @ts-ignore
       .update({
-        ...(updates as any),
+        ...updates,
         updated_at: new Date().toISOString(),
       })
       .eq('user_id', userId)

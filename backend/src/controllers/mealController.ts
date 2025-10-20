@@ -102,6 +102,7 @@ export async function updateMeal(req: AuthRequest, res: Response) {
 
     const { data, error } = await supabase
       .from('meals')
+      // @ts-ignore
       .update(updates)
       .eq('id', id)
       .eq('user_id', userId)

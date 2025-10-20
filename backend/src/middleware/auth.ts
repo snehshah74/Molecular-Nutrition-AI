@@ -8,6 +8,8 @@ export interface AuthRequest extends Request {
   }
   params: any
   headers: any
+  body: any
+  query: any
 }
 
 export async function authMiddleware(
