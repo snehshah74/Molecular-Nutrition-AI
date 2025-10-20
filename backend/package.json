@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc --noEmitOnError false",
+    "build": "tsc --noEmitOnError false --skipLibCheck",
     "start": "node dist/server.js",
     "lint": "eslint . --ext .ts",
     "test": "jest"
