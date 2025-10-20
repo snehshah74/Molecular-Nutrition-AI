@@ -42,12 +42,8 @@ const updatePerformanceMetrics = (responseTime: number, fromCache: boolean = fal
     (performanceMetrics.averageResponseTime * (performanceMetrics.totalRequests - 1) + responseTime) / performanceMetrics.totalRequests
 }
 
-// OpenRouter API configuration
-const openai = new OpenAI({
-  baseURL: "https://openrouter.ai/api/v1",
-  apiKey: (import.meta as any).env?.VITE_OPENROUTER_API_KEY || "your-openrouter-api-key",
-  dangerouslyAllowBrowser: true, // Required for browser environment
-})
+// OpenRouter API configuration - using fetch instead of OpenAI client
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || "your-openrouter-api-key"
 
 // Nutrition API configuration (using Edamam as example)
 const NUTRITION_API_BASE = "https://api.edamam.com/api/nutrition-data"
@@ -461,24 +457,37 @@ export class AIRecommendationsService {
       const prompt = this.buildRecommendationPrompt(userProfile, dailyIntake, deficiencies)
       console.log('Generated prompt:', prompt.substring(0, 200) + '...')
       
-      const response = await openai.chat.completions.create({
-        model: "openai/gpt-4o-mini", // Faster model for better performance
-        messages: [
-          {
-            role: "system",
-            content: "You are an advanced molecular nutrition AI with expertise in nutrigenomics, circadian biology, and precision medicine. Provide highly specific, evidence-based nutrition recommendations with molecular explanations. Always respond in valid JSON format."
-          },
-          {
-            role: "user",
-            content: prompt
-          }
-        ],
-        max_tokens: 1500, // Increased for more detailed responses
-        temperature: 0.3, // Lower temperature for more consistent, scientific responses
-        response_format: { type: "json_object" } // Force JSON response format
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "openai/gpt-4o-mini",
+          messages: [
+            {
+              role: "system",
+              content: "You are an advanced molecular nutrition AI with expertise in nutrigenomics, circadian biology, and precision medicine. Provide highly specific, evidence-based nutrition recommendations with molecular explanations. Always respond in valid JSON format."
+            },
+            {
+              role: "user",
+              content: prompt
+            }
+          ],
+          max_tokens: 1500,
+          temperature: 0.3,
+          response_format: { type: "json_object" }
+        })
       })
 
-      const content = response.choices[0]?.message?.content || ""
+      if (!response.ok) {
+        throw new Error(`OpenRouter API error: ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      const content = data.choices[0]?.message?.content || ""
       console.log('AI Response received:', content.substring(0, 200) + '...')
       const recommendations = this.parseRecommendations(content)
       console.log('Parsed recommendations:', recommendations)

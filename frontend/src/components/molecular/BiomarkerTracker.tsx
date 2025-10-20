@@ -331,7 +331,7 @@ export function BiomarkerTracker({ userProfile }: BiomarkerTrackerProps) {
                         'bg-gray-400'
                       }`}
                       style={{
-                        width: `${Math.min(100, Math.max(0, ((latestValue - config.optimal.min) / (config.optimal.max - config.optimal.min)) * 100))}%`
+                        width: `${Math.min(100, Math.max(0, ((Number(latestValue) - Number(config.optimal.min)) / (Number(config.optimal.max) - Number(config.optimal.min))) * 100))}%`
                       }}
                     />
                   </div>
